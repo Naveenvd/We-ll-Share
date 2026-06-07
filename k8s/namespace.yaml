@@ -1,0 +1,5 @@
+# Creates an isolated space for all We'll Share resources
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: wellshare

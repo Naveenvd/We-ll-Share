@@ -1,0 +1,34 @@
+# ── Ingress — routes external traffic into the cluster ────────────
+# This is the only entry point from the internet
+# Install ingress controller first:
+#   kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/main/deploy/static/provider/cloud/deploy.yaml
+#
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: wellshare-ingress
+  namespace: wellshare
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /
+spec:
+  ingressClassName: nginx
+  rules:
+    - host: wellshare.yourdomain.com       # ← replace with your domain
+      http:
+        paths:
+          # All /api/* calls go to backend
+          - path: /api
+            pathType: Prefix
+            backend:
+              service:
+                name: wellshare-backend
+                port:
+                  number: 8081
+          # All other traffic goes to frontend (Angular)
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: wellshare-frontend
+                port:
+                  number: 80

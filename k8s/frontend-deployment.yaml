@@ -1,0 +1,42 @@
+# ── Angular Frontend Deployment ───────────────────────────────────
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: wellshare-frontend
+  namespace: wellshare
+spec:
+  replicas: 2               # 2 frontend pods for load balancing
+  selector:
+    matchLabels:
+      app: wellshare-frontend
+  template:
+    metadata:
+      labels:
+        app: wellshare-frontend
+    spec:
+      containers:
+        - name: frontend
+          image: naveenvd/wellshare-frontend:latest  # Jenkins updates this tag
+          ports:
+            - containerPort: 80
+          resources:
+            requests:
+              memory: "64Mi"
+              cpu: "50m"
+            limits:
+              memory: "128Mi"
+              cpu: "100m"
+
+---
+# ── Frontend Service ──────────────────────────────────────────────
+apiVersion: v1
+kind: Service
+metadata:
+  name: wellshare-frontend
+  namespace: wellshare
+spec:
+  selector:
+    app: wellshare-frontend
+  ports:
+    - port: 80
+      targetPort: 80

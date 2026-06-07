@@ -1,0 +1,71 @@
+# ── MySQL Persistent Volume ───────────────────────────────────────
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: mysql-pvc
+  namespace: wellshare
+spec:
+  accessModes: [ReadWriteOnce]
+  resources:
+    requests:
+      storage: 5Gi
+
+---
+# ── MySQL Deployment ──────────────────────────────────────────────
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: wellshare-mysql
+  namespace: wellshare
+spec:
+  replicas: 1             # Only 1 DB replica (MySQL is stateful)
+  selector:
+    matchLabels:
+      app: wellshare-mysql
+  template:
+    metadata:
+      labels:
+        app: wellshare-mysql
+    spec:
+      containers:
+        - name: mysql
+          image: mysql:8.0
+          ports:
+            - containerPort: 3306
+          env:
+            - name: MYSQL_ROOT_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: wellshare-secrets
+                  key: db-password
+            - name: MYSQL_DATABASE
+              value: "ridemate"
+            - name: MYSQL_USER
+              value: "wellshare"
+            - name: MYSQL_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: wellshare-secrets
+                  key: db-password
+          volumeMounts:
+            - name: mysql-storage
+              mountPath: /var/lib/mysql
+      volumes:
+        - name: mysql-storage
+          persistentVolumeClaim:
+            claimName: mysql-pvc
+
+---
+# ── MySQL Service (internal DNS: wellshare-mysql:3306) ───────────
+apiVersion: v1
+kind: Service
+metadata:
+  name: wellshare-mysql
+  namespace: wellshare
+spec:
+  selector:
+    app: wellshare-mysql
+  ports:
+    - port: 3306
+      targetPort: 3306
+  clusterIP: None           # Headless service — stable DNS for DB

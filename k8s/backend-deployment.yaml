@@ -1,0 +1,85 @@
+# ── Spring Boot Backend Deployment ───────────────────────────────
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: wellshare-backend
+  namespace: wellshare
+spec:
+  replicas: 2               # 2 backend pods for high availability
+  selector:
+    matchLabels:
+      app: wellshare-backend
+  template:
+    metadata:
+      labels:
+        app: wellshare-backend
+    spec:
+      containers:
+        - name: backend
+          image: naveenvd/wellshare-backend:latest   # Jenkins updates this tag
+          ports:
+            - containerPort: 8081
+          env:
+            # Database — points to MySQL service inside cluster
+            - name: SPRING_DATASOURCE_URL
+              value: "jdbc:mysql://wellshare-mysql:3306/ridemate?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true"
+            - name: SPRING_DATASOURCE_USERNAME
+              value: "wellshare"
+            - name: SPRING_DATASOURCE_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: wellshare-secrets
+                  key: db-password
+            # JWT Secret
+            - name: APP_JWT_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: wellshare-secrets
+                  key: jwt-secret
+            # CORS — allow frontend origin
+            - name: APP_CORS_ALLOWED_ORIGINS
+              value: "https://wellshare.yourdomain.com"
+            # File uploads directory
+            - name: APP_UPLOAD_DIR
+              value: "/app/uploads"
+          # Health checks — K8s restarts pod if backend crashes
+          readinessProbe:
+            httpGet:
+              path: /api/actuator/health
+              port: 8081
+            initialDelaySeconds: 30
+            periodSeconds: 10
+          livenessProbe:
+            httpGet:
+              path: /api/actuator/health
+              port: 8081
+            initialDelaySeconds: 60
+            periodSeconds: 20
+          # Resource limits
+          resources:
+            requests:
+              memory: "256Mi"
+              cpu: "250m"
+            limits:
+              memory: "512Mi"
+              cpu: "500m"
+          volumeMounts:
+            - name: uploads
+              mountPath: /app/uploads
+      volumes:
+        - name: uploads
+          emptyDir: {}
+
+---
+# ── Backend Service (internal) ────────────────────────────────────
+apiVersion: v1
+kind: Service
+metadata:
+  name: wellshare-backend
+  namespace: wellshare
+spec:
+  selector:
+    app: wellshare-backend
+  ports:
+    - port: 8081
+      targetPort: 8081
