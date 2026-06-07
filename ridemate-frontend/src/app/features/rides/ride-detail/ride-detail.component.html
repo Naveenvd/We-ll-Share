@@ -1,0 +1,180 @@
+<!-- Ride Detail Page -->
+<div class="page-wrapper">
+
+  <div class="page-header">
+    <a mat-icon-button routerLink="/rides/search"><mat-icon>arrow_back</mat-icon></a>
+    <h2>Ride Details</h2>
+  </div>
+
+  <div *ngIf="loading" class="center-spinner"><mat-spinner diameter="48"></mat-spinner></div>
+
+  <ng-container *ngIf="!loading && ride">
+
+    <!-- ── Status + Cancel (driver view) ───────────────────────── -->
+    <div class="top-bar-actions">
+      <span class="status-badge" [ngClass]="'status-badge--' + ride.status.toLowerCase()">
+        {{ ride.status | titlecase }}
+      </span>
+      <button *ngIf="isOwner && ride.status === 'SCHEDULED'"
+              mat-stroked-button color="warn"
+              [disabled]="cancelling"
+              (click)="cancelRide()">
+        <mat-spinner *ngIf="cancelling" diameter="18"></mat-spinner>
+        <span *ngIf="!cancelling"><mat-icon>cancel</mat-icon> Cancel Ride</span>
+      </button>
+    </div>
+
+    <!-- ── Route map ────────────────────────────────────────────── -->
+    <mat-card class="map-card">
+      <div #mapEl class="detail-map"></div>
+    </mat-card>
+
+    <!-- ── Driver card ──────────────────────────────────────────── -->
+    <mat-card class="section-card">
+      <mat-card-content>
+        <h3 class="section-title">Driver</h3>
+        <div class="driver-row">
+          <img *ngIf="ride.driver.photoUrl" [src]="ride.driver.photoUrl"
+               class="driver-avatar" alt="driver" />
+          <div *ngIf="!ride.driver.photoUrl" class="driver-avatar driver-avatar--placeholder">
+            <mat-icon>person</mat-icon>
+          </div>
+          <div class="driver-info">
+            <strong>{{ ride.driver.name }}</strong>
+            <div class="rating-row">
+              <mat-icon class="star">star</mat-icon>
+              {{ ride.driver.avgRating | number:'1.1-1' }}
+              &nbsp;·&nbsp; {{ ride.driver.totalRides }} rides completed
+            </div>
+            <span class="gender-badge">{{ ride.driver.gender | titlecase }}</span>
+          </div>
+        </div>
+      </mat-card-content>
+    </mat-card>
+
+    <!-- ── Route details ─────────────────────────────────────────── -->
+    <mat-card class="section-card">
+      <mat-card-content>
+        <h3 class="section-title">Route</h3>
+
+        <div class="route-step">
+          <div class="step-icon step-icon--from"><mat-icon>my_location</mat-icon></div>
+          <div class="step-text">
+            <span class="step-label">Pickup</span>
+            <span>{{ ride.fromLocation }}</span>
+          </div>
+        </div>
+
+        <div *ngFor="let stop of ride.stops" class="route-step route-step--stop">
+          <div class="step-icon step-icon--stop">{{ stop.sequence }}</div>
+          <div class="step-text">
+            <span class="step-label">Stop {{ stop.sequence }}</span>
+            <span>{{ stop.stopName }}</span>
+          </div>
+        </div>
+
+        <div class="route-step">
+          <div class="step-icon step-icon--to"><mat-icon>location_on</mat-icon></div>
+          <div class="step-text">
+            <span class="step-label">Drop</span>
+            <span>{{ ride.toLocation }}</span>
+          </div>
+        </div>
+
+      </mat-card-content>
+    </mat-card>
+
+    <!-- ── Ride info ─────────────────────────────────────────────── -->
+    <mat-card class="section-card">
+      <mat-card-content>
+        <h3 class="section-title">Ride Info</h3>
+
+        <div class="info-grid">
+          <div class="info-item">
+            <mat-icon>schedule</mat-icon>
+            <div>
+              <div class="info-label">Departure</div>
+              <div>{{ ride.departureTime | date:'EEEE, MMMM d · h:mm a' }}</div>
+            </div>
+          </div>
+
+          <div class="info-item">
+            <mat-icon>currency_rupee</mat-icon>
+            <div>
+              <div class="info-label">Price per Seat</div>
+              <div class="price">₹{{ ride.pricePerSeat }}</div>
+            </div>
+          </div>
+
+          <div class="info-item">
+            <mat-icon>event_seat</mat-icon>
+            <div>
+              <div class="info-label">Seats Available</div>
+              <div>{{ ride.seatsAvailable }} / {{ ride.seatsTotal }}</div>
+            </div>
+          </div>
+
+          <div class="info-item" *ngIf="ride.vehicle">
+            <mat-icon>directions_car</mat-icon>
+            <div>
+              <div class="info-label">Vehicle</div>
+              <div>{{ ride.vehicle.model }} · {{ ride.vehicle.color }}
+                <span class="plate">{{ ride.vehicle.numberPlate }}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Tags -->
+        <div class="tags-row">
+          <span *ngIf="ride.womenOnly" class="tag tag--women">
+            <mat-icon>female</mat-icon> Women-only
+          </span>
+          <span *ngIf="ride.acceptsPassengers" class="tag tag--pass">
+            <mat-icon>person</mat-icon> Passengers
+          </span>
+          <span *ngIf="ride.acceptsParcels" class="tag tag--parcel">
+            <mat-icon>inventory_2</mat-icon> Parcels accepted ({{ ride.maxParcelSize }})
+          </span>
+        </div>
+
+      </mat-card-content>
+    </mat-card>
+
+    <!-- ── Book bar (passenger view) ────────────────────────────── -->
+    <div *ngIf="!isOwner && ride.status === 'SCHEDULED' && ride.acceptsPassengers"
+         class="book-bar">
+
+      <!-- Seat picker -->
+      <div class="seat-picker">
+        <button mat-icon-button (click)="decreaseSeats()" [disabled]="seatsBooked <= 1">
+          <mat-icon>remove_circle_outline</mat-icon>
+        </button>
+        <span class="seat-count">{{ seatsBooked }}</span>
+        <button mat-icon-button (click)="increaseSeats()"
+                [disabled]="seatsBooked >= ride.seatsAvailable || seatsBooked >= 10">
+          <mat-icon>add_circle_outline</mat-icon>
+        </button>
+        <span class="seat-label">seat(s)</span>
+      </div>
+
+      <div class="book-price">₹{{ bookingAmount }}<span> total</span></div>
+
+      <button mat-raised-button color="primary" class="book-btn"
+              [disabled]="booking || ride.seatsAvailable === 0"
+              (click)="bookRide()">
+        <mat-spinner *ngIf="booking" diameter="20"></mat-spinner>
+        <mat-icon *ngIf="!booking">check_circle</mat-icon>
+        {{ booking ? 'Requesting…' : 'Request to Book' }}
+      </button>
+    </div>
+
+    <!-- No seats available -->
+    <div *ngIf="!isOwner && ride.status === 'SCHEDULED' && ride.seatsAvailable === 0"
+         class="book-bar book-bar--full">
+      <mat-icon>event_busy</mat-icon>
+      <span>This ride is full</span>
+    </div>
+
+  </ng-container>
+</div>

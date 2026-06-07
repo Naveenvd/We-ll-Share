@@ -1,0 +1,226 @@
+<div class="page-wrapper">
+
+  <div class="page-header">
+    <a mat-icon-button routerLink="/dashboard"><mat-icon>arrow_back</mat-icon></a>
+    <h2>Send a Parcel</h2>
+  </div>
+
+  <mat-stepper #stepper linear orientation="vertical" class="parcel-stepper">
+
+    <!-- ── Step 1: Select a ride ──────────────────────────────────── -->
+    <mat-step label="Choose a Ride" [completed]="!!selectedRide">
+
+      <div class="step-body">
+        <!-- Search bar (simplified — can be extended with MapPicker) -->
+        <form [formGroup]="searchForm" (ngSubmit)="searchRides()" class="search-row">
+          <mat-form-field appearance="outline" class="flex1">
+            <mat-label>From city</mat-label>
+            <input matInput formControlName="from" placeholder="e.g. Mumbai" />
+          </mat-form-field>
+          <mat-form-field appearance="outline" class="flex1">
+            <mat-label>To city</mat-label>
+            <input matInput formControlName="to" placeholder="e.g. Pune" />
+          </mat-form-field>
+          <mat-form-field appearance="outline" class="date-field">
+            <mat-label>Date</mat-label>
+            <input matInput type="date" formControlName="date" />
+          </mat-form-field>
+          <button mat-flat-button color="primary" type="submit" [disabled]="searching">
+            <mat-spinner *ngIf="searching" diameter="18"></mat-spinner>
+            <mat-icon *ngIf="!searching">search</mat-icon>
+            Search
+          </button>
+        </form>
+
+        <!-- Alternatively: direct link from ride detail (auto-selected) -->
+        <div *ngIf="selectedRide" class="selected-ride-chip">
+          <mat-icon>check_circle</mat-icon>
+          <span>
+            Ride selected: <strong>{{ selectedRide.fromLocation }} → {{ selectedRide.toLocation }}</strong>
+            on {{ selectedRide.departureTime | date:'d MMM, h:mm a' }}
+          </span>
+          <button mat-icon-button (click)="selectedRide = null">
+            <mat-icon>close</mat-icon>
+          </button>
+        </div>
+
+        <!-- Ride results -->
+        <div *ngIf="rides.length === 0 && !searching && searchForm.dirty" class="empty-hint">
+          No parcel-accepting rides found. Try different dates.
+        </div>
+
+        <mat-card *ngFor="let r of rides"
+                  class="ride-result-card"
+                  [class.selected]="selectedRide?.id === r.id"
+                  (click)="selectRide(r)">
+          <mat-card-content>
+            <div class="ride-result-row">
+              <div class="ride-result-route">
+                <span class="from">{{ r.fromLocation }}</span>
+                <mat-icon>arrow_forward</mat-icon>
+                <span class="to">{{ r.toLocation }}</span>
+              </div>
+              <div class="ride-result-meta">
+                <span><mat-icon class="mini-icon">schedule</mat-icon>{{ r.departureTime | date:'d MMM, h:mm a' }}</span>
+                <span><mat-icon class="mini-icon">inventory_2</mat-icon>{{ r.maxParcelSize }}</span>
+                <span class="price">₹{{ r.pricePerSeat }}/seat</span>
+              </div>
+            </div>
+          </mat-card-content>
+        </mat-card>
+
+        <div class="step-actions">
+          <button mat-flat-button color="primary" matStepperNext
+                  [disabled]="!selectedRide">
+            Next: Parcel Details <mat-icon>chevron_right</mat-icon>
+          </button>
+        </div>
+      </div>
+    </mat-step>
+
+    <!-- ── Step 2: Parcel details ─────────────────────────────────── -->
+    <mat-step label="Parcel Details" [stepControl]="detailsForm">
+      <div class="step-body">
+        <form [formGroup]="detailsForm">
+
+          <!-- Size selection -->
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>Parcel Size</mat-label>
+            <mat-select formControlName="size">
+              <mat-option *ngFor="let s of SIZES" [value]="s.value">
+                {{ s.label }} — <em>{{ s.hint }}</em>
+              </mat-option>
+            </mat-select>
+          </mat-form-field>
+
+          <!-- Description -->
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>What's in the parcel?</mat-label>
+            <textarea matInput formControlName="description" rows="3"
+                      placeholder="e.g. Documents, clothes, small electronics...">
+            </textarea>
+            <mat-error *ngIf="detailsForm.get('description')?.hasError('minlength')">
+              Minimum 5 characters
+            </mat-error>
+          </mat-form-field>
+
+          <!-- Price -->
+          <mat-form-field appearance="outline" class="half-width">
+            <mat-label>Your Price Offer (₹)</mat-label>
+            <input matInput type="number" formControlName="price" min="1" />
+            <mat-error *ngIf="detailsForm.get('price')?.hasError('min')">
+              Must be at least ₹1
+            </mat-error>
+          </mat-form-field>
+
+          <!-- Photo upload -->
+          <div class="photo-section">
+            <div class="photo-label">Parcel Photo <em>(optional)</em></div>
+            <div class="photo-upload-row">
+              <button mat-stroked-button type="button" (click)="photoInput.click()">
+                <mat-icon>add_photo_alternate</mat-icon>
+                {{ photoFile ? 'Change Photo' : 'Add Photo' }}
+              </button>
+              <input #photoInput type="file" accept="image/*" hidden
+                     (change)="onPhotoSelected($event)" />
+              <button *ngIf="photoFile" mat-icon-button color="warn"
+                      type="button" (click)="removePhoto()">
+                <mat-icon>delete</mat-icon>
+              </button>
+            </div>
+            <img *ngIf="photoPreview" [src]="photoPreview" class="photo-preview" alt="Parcel" />
+          </div>
+
+          <!-- Restricted items acknowledgement -->
+          <div class="restricted-section">
+            <h4 class="restricted-title">
+              <mat-icon color="warn">warning</mat-icon>
+              Restricted Items
+            </h4>
+            <p class="restricted-hint">
+              You must confirm that your parcel does NOT contain any of the following:
+            </p>
+            <ul class="restricted-list">
+              <li *ngFor="let item of RESTRICTED_ITEMS">{{ item }}</li>
+            </ul>
+            <mat-checkbox formControlName="ack" color="primary">
+              I confirm this parcel contains <strong>no restricted items</strong>
+            </mat-checkbox>
+            <div *ngIf="detailsForm.get('ack')?.invalid && detailsForm.get('ack')?.touched"
+                 class="ack-error">
+              You must acknowledge this before continuing.
+            </div>
+          </div>
+
+        </form>
+
+        <div class="step-actions">
+          <button mat-stroked-button matStepperPrevious>Back</button>
+          <button mat-flat-button color="primary" matStepperNext
+                  [disabled]="detailsForm.invalid">
+            Review <mat-icon>chevron_right</mat-icon>
+          </button>
+        </div>
+      </div>
+    </mat-step>
+
+    <!-- ── Step 3: Confirm ────────────────────────────────────────── -->
+    <mat-step label="Confirm & Send">
+      <div class="step-body" *ngIf="selectedRide">
+
+        <div class="confirm-grid">
+          <div class="confirm-row">
+            <mat-icon>directions_car</mat-icon>
+            <div>
+              <div class="conf-label">Ride</div>
+              <div>{{ selectedRide.fromLocation }} → {{ selectedRide.toLocation }}</div>
+              <div class="conf-sub">{{ selectedRide.departureTime | date:'EEE, d MMM yyyy · h:mm a' }}</div>
+            </div>
+          </div>
+
+          <div class="confirm-row">
+            <mat-icon>inventory_2</mat-icon>
+            <div>
+              <div class="conf-label">Size & Description</div>
+              <div>{{ detailsForm.value.size }} — {{ detailsForm.value.description }}</div>
+            </div>
+          </div>
+
+          <div class="confirm-row">
+            <mat-icon>currency_rupee</mat-icon>
+            <div>
+              <div class="conf-label">Your Offer</div>
+              <div class="conf-price">₹{{ detailsForm.value.price }}</div>
+            </div>
+          </div>
+
+          <div class="confirm-row" *ngIf="photoPreview">
+            <mat-icon>photo</mat-icon>
+            <div>
+              <div class="conf-label">Parcel Photo</div>
+              <img [src]="photoPreview" class="confirm-photo" alt="Parcel" />
+            </div>
+          </div>
+        </div>
+
+        <div class="info-notice">
+          <mat-icon>info_outline</mat-icon>
+          The driver will review your request and may accept or reject it.
+          You will be notified in <strong>My Parcels</strong>.
+        </div>
+
+        <div class="step-actions">
+          <button mat-stroked-button matStepperPrevious>Back</button>
+          <button mat-flat-button color="primary"
+                  [disabled]="submitting"
+                  (click)="submit()">
+            <mat-spinner *ngIf="submitting" diameter="20"></mat-spinner>
+            <mat-icon *ngIf="!submitting">send</mat-icon>
+            {{ submitting ? 'Sending…' : 'Send Request' }}
+          </button>
+        </div>
+      </div>
+    </mat-step>
+
+  </mat-stepper>
+</div>

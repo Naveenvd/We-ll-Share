@@ -1,0 +1,57 @@
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+#  We'll Share — Backend Config TEMPLATE
+#
+#  HOW TO USE:
+#  1. Copy this file:
+#       cp application.properties.example application.properties
+#  2. Fill in YOUR local values below
+#  3. Never commit application.properties to git!
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+# ── Server ──────────────────────────────────────────────
+server.port=8081
+
+# ── Database (MySQL) ─────────────────────────────────────
+# Create a local MySQL database named "ridemate" first:
+#   CREATE DATABASE ridemate;
+spring.datasource.url=jdbc:mysql://localhost:3306/ridemate?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true
+spring.datasource.username=YOUR_MYSQL_USERNAME
+spring.datasource.password=YOUR_MYSQL_PASSWORD
+spring.datasource.driver-class-name=com.mysql.cj.jdbc.Driver
+
+# ── JPA ──────────────────────────────────────────────────
+spring.jpa.hibernate.ddl-auto=update
+spring.jpa.show-sql=false
+spring.jpa.properties.hibernate.format_sql=true
+spring.jpa.properties.hibernate.dialect=org.hibernate.dialect.MySQLDialect
+
+# ── JWT ──────────────────────────────────────────────────
+# Must be at least 32 characters — change this to your own secret!
+app.jwt.secret=REPLACE_WITH_YOUR_OWN_SECRET_KEY_MIN_32_CHARS
+app.jwt.expiration-ms=86400000
+
+# ── File Storage ─────────────────────────────────────────
+app.upload.dir=./uploads
+app.upload.max-size-bytes=5242880
+app.upload.allowed-image-types=jpg,jpeg,png
+app.upload.allowed-doc-types=jpg,jpeg,png,pdf
+
+# ── Multipart ────────────────────────────────────────────
+spring.servlet.multipart.max-file-size=5MB
+spring.servlet.multipart.max-request-size=15MB
+
+# ── CORS ─────────────────────────────────────────────────
+app.cors.allowed-origins=http://localhost:4200
+
+# ── OTP ──────────────────────────────────────────────────
+app.otp.expiry-minutes=10
+
+# ── Mail (Gmail SMTP) ────────────────────────────────────
+# Use an App Password (not your real Gmail password)
+# Enable it at: myaccount.google.com/apppasswords
+spring.mail.host=smtp.gmail.com
+spring.mail.port=587
+spring.mail.username=YOUR_GMAIL_ADDRESS@gmail.com
+spring.mail.password=YOUR_GMAIL_APP_PASSWORD
+spring.mail.properties.mail.smtp.auth=true
+spring.mail.properties.mail.smtp.starttls.enable=true

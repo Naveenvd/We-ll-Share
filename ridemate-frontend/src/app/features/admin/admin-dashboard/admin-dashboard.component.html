@@ -1,0 +1,271 @@
+<!-- Admin Dashboard -->
+<div class="admin-layout" [class.sidebar-open]="isMobileMenuOpen">
+
+  <!-- Mobile overlay -->
+  <div class="admin-overlay" (click)="closeMobileMenu()"></div>
+
+  <!-- ── Sidebar ──────────────────────────────────────────────── -->
+  <nav class="admin-sidebar">
+    <button class="sidebar-close-btn" (click)="closeMobileMenu()">
+      <mat-icon>close</mat-icon>
+    </button>
+
+    <div class="sidebar-brand">
+      <div class="brand-icon-wrap">
+        <mat-icon>admin_panel_settings</mat-icon>
+      </div>
+      <div class="brand-text">
+        <span class="brand-name">We'll Share</span>
+        <span class="brand-sub">Admin Console</span>
+      </div>
+    </div>
+
+    <nav class="sidebar-nav">
+      <a routerLink="/admin/dashboard" class="nav-item"
+         routerLinkActive="nav-item--active"
+         [routerLinkActiveOptions]="{exact:true}"
+         (click)="closeMobileMenu()">
+        <span class="nav-icon"><mat-icon>dashboard</mat-icon></span>
+        <span>Dashboard</span>
+      </a>
+      <a routerLink="/admin/verifications" class="nav-item"
+         routerLinkActive="nav-item--active"
+         (click)="closeMobileMenu()">
+        <span class="nav-icon"><mat-icon>verified_user</mat-icon></span>
+        <span>Verifications</span>
+        <span *ngIf="stats?.pendingVerifications" class="nav-badge">{{ stats?.pendingVerifications }}</span>
+      </a>
+      <a routerLink="/admin/users" class="nav-item"
+         routerLinkActive="nav-item--active"
+         (click)="closeMobileMenu()">
+        <span class="nav-icon"><mat-icon>group</mat-icon></span>
+        <span>Users</span>
+      </a>
+    </nav>
+
+    <div class="sidebar-footer">
+      <button class="nav-item nav-item--logout" (click)="logout()">
+        <span class="nav-icon"><mat-icon>logout</mat-icon></span>
+        <span>Logout</span>
+      </button>
+    </div>
+  </nav>
+
+  <!-- ── Main ─────────────────────────────────────────────────── -->
+  <main class="admin-main">
+
+    <!-- Topbar -->
+    <header class="admin-topbar">
+      <button class="hamburger-btn" (click)="toggleMobileMenu()">
+        <mat-icon>menu</mat-icon>
+      </button>
+      <div class="topbar-title">
+        <h2>Dashboard</h2>
+        <p>Overview &amp; action queues</p>
+      </div>
+      <div class="topbar-actions">
+        <div class="admin-avatar">
+          <mat-icon>admin_panel_settings</mat-icon>
+        </div>
+      </div>
+    </header>
+
+    <!-- Loading -->
+    <div *ngIf="loading" class="center-spinner">
+      <mat-spinner diameter="44"></mat-spinner>
+    </div>
+
+    <ng-container *ngIf="!loading">
+
+      <!-- ── Stats grid ── -->
+      <div *ngIf="stats" class="stats-grid">
+
+        <div class="stat-card stat-card--violet">
+          <div class="stat-icon"><mat-icon>group</mat-icon></div>
+          <div class="stat-info">
+            <span class="stat-value">{{ stats.totalUsers }}</span>
+            <span class="stat-label">Total Users</span>
+          </div>
+        </div>
+
+        <div class="stat-card stat-card--amber">
+          <div class="stat-icon"><mat-icon>hourglass_top</mat-icon></div>
+          <div class="stat-info">
+            <span class="stat-value">{{ stats.pendingVerifications }}</span>
+            <span class="stat-label">Pending Verifications</span>
+          </div>
+          <a routerLink="/admin/verifications" class="stat-cta">Review →</a>
+        </div>
+
+        <div class="stat-card stat-card--green">
+          <div class="stat-icon"><mat-icon>verified_user</mat-icon></div>
+          <div class="stat-info">
+            <span class="stat-value">{{ stats.verifiedUsers }}</span>
+            <span class="stat-label">Verified Users</span>
+          </div>
+        </div>
+
+        <div class="stat-card stat-card--blue">
+          <div class="stat-icon"><mat-icon>directions_car</mat-icon></div>
+          <div class="stat-info">
+            <span class="stat-value">{{ stats.totalRides }}</span>
+            <span class="stat-label">Total Rides</span>
+          </div>
+        </div>
+
+        <div class="stat-card stat-card--indigo">
+          <div class="stat-icon"><mat-icon>inventory_2</mat-icon></div>
+          <div class="stat-info">
+            <span class="stat-value">{{ stats.totalParcels }}</span>
+            <span class="stat-label">Total Parcels</span>
+          </div>
+        </div>
+
+        <div class="stat-card stat-card--red">
+          <div class="stat-icon"><mat-icon>sos</mat-icon></div>
+          <div class="stat-info">
+            <span class="stat-value">{{ stats.openSosAlerts }}</span>
+            <span class="stat-label">Open SOS Alerts</span>
+          </div>
+          <div *ngIf="stats.openSosAlerts > 0" class="stat-urgent-dot"></div>
+        </div>
+
+        <div class="stat-card stat-card--orange">
+          <div class="stat-icon"><mat-icon>flag</mat-icon></div>
+          <div class="stat-info">
+            <span class="stat-value">{{ stats.openReports }}</span>
+            <span class="stat-label">Open Reports</span>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- ── Action queues ── -->
+      <div class="queues-header">
+        <h3 class="queue-title">Action Queues</h3>
+      </div>
+
+      <mat-tab-group class="queue-tabs" animationDuration="200ms">
+
+        <!-- ═══ SOS Alerts ═══ -->
+        <mat-tab>
+          <ng-template mat-tab-label>
+            <span class="tab-label">
+              <mat-icon class="tab-icon sos-icon">emergency</mat-icon>
+              SOS Alerts
+              <span *ngIf="sosAlerts.length" class="tab-badge tab-badge--red">{{ sosAlerts.length }}</span>
+            </span>
+          </ng-template>
+
+          <div class="queue-body">
+            <div *ngIf="sosAlerts.length === 0" class="empty-queue">
+              <div class="empty-icon-wrap">
+                <mat-icon>check_circle</mat-icon>
+              </div>
+              <p>All clear — no active SOS alerts</p>
+            </div>
+
+            <div *ngFor="let a of sosAlerts" class="queue-card sos-card">
+              <div class="qcard-accent"></div>
+              <div class="qcard-content">
+                <div class="qcard-header">
+                  <div class="sos-badge">
+                    <mat-icon>emergency</mat-icon>
+                    <span>SOS</span>
+                  </div>
+                  <div class="qcard-meta">
+                    <strong class="qcard-name">{{ a.userName }}</strong>
+                    <span class="qcard-time">{{ a.createdAt | date:'dd MMM yyyy, h:mm a' }}</span>
+                  </div>
+                  <button mat-flat-button color="warn" class="ack-btn" (click)="acknowledge(a)">
+                    <mat-icon>check</mat-icon> Acknowledge
+                  </button>
+                </div>
+                <div class="qcard-details">
+                  <span *ngIf="a.latitude">
+                    <mat-icon>location_on</mat-icon>
+                    {{ a.latitude | number:'1.4-4' }}, {{ a.longitude | number:'1.4-4' }}
+                  </span>
+                  <span *ngIf="!a.latitude" class="muted">
+                    <mat-icon>location_off</mat-icon> Location unavailable
+                  </span>
+                  <span *ngIf="a.message">
+                    <mat-icon>message</mat-icon> {{ a.message }}
+                  </span>
+                  <span *ngIf="a.bookingId">
+                    <mat-icon>confirmation_number</mat-icon> Booking #{{ a.bookingId }}
+                  </span>
+                  <span *ngIf="a.parcelId">
+                    <mat-icon>inventory_2</mat-icon> Parcel #{{ a.parcelId }}
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </mat-tab>
+
+        <!-- ═══ Reports ═══ -->
+        <mat-tab>
+          <ng-template mat-tab-label>
+            <span class="tab-label">
+              <mat-icon class="tab-icon">flag</mat-icon>
+              Reports
+              <span *ngIf="reports.length" class="tab-badge tab-badge--orange">{{ reports.length }}</span>
+            </span>
+          </ng-template>
+
+          <div class="queue-body">
+            <div *ngIf="reports.length === 0" class="empty-queue">
+              <div class="empty-icon-wrap">
+                <mat-icon>check_circle</mat-icon>
+              </div>
+              <p>No open reports to review</p>
+            </div>
+
+            <div *ngFor="let r of reports" class="queue-card">
+              <div class="qcard-content">
+                <div class="qcard-header">
+                  <div class="qcard-meta">
+                    <strong class="qcard-name">{{ r.reporterName }}</strong>
+                    <mat-icon class="arrow-sm">arrow_forward</mat-icon>
+                    <strong class="qcard-name reported-name">{{ r.reportedName }}</strong>
+                    <span class="reason-chip">{{ r.reason }}</span>
+                  </div>
+                  <span class="qcard-time">{{ r.createdAt | date:'dd MMM yyyy' }}</span>
+                </div>
+
+                <p *ngIf="r.details" class="report-details">{{ r.details }}</p>
+
+                <div class="context-row">
+                  <span *ngIf="r.bookingId" class="context-tag">
+                    <mat-icon>confirmation_number</mat-icon> Booking #{{ r.bookingId }}
+                  </span>
+                  <span *ngIf="r.parcelId" class="context-tag">
+                    <mat-icon>inventory_2</mat-icon> Parcel #{{ r.parcelId }}
+                  </span>
+                </div>
+
+                <div class="resolve-row">
+                  <mat-form-field appearance="outline" class="resolve-field">
+                    <mat-label>Resolution note</mat-label>
+                    <input matInput
+                           [(ngModel)]="resolutionText[r.id]"
+                           placeholder="Describe the action taken…"
+                           maxlength="500" />
+                  </mat-form-field>
+                  <button mat-flat-button color="primary"
+                          [disabled]="!resolutionText[r.id]?.trim()"
+                          (click)="resolveReport(r)">
+                    Resolve
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </mat-tab>
+
+      </mat-tab-group>
+
+    </ng-container>
+  </main>
+</div>

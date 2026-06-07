@@ -1,0 +1,230 @@
+<!-- Post Ride — 2-step stepper -->
+<div class="page-wrapper">
+  <div class="page-header">
+    <a mat-icon-button routerLink="/dashboard"><mat-icon>arrow_back</mat-icon></a>
+    <h2>Post a Ride</h2>
+  </div>
+
+  <div *ngIf="errorMessage" class="error-banner">
+    <mat-icon>error_outline</mat-icon> {{ errorMessage }}
+  </div>
+
+  <mat-stepper [linear]="true" #stepper orientation="horizontal">
+
+    <!-- ══ STEP 1: Route ══════════════════════════════════════════ -->
+    <mat-step [stepControl]="routeForm" label="Set Route">
+      <form [formGroup]="routeForm" novalidate>
+
+        <!-- FROM picker -->
+        <mat-card class="map-card">
+          <mat-card-content>
+            <h3 class="map-label">
+              <span class="dot dot--from"></span> Pickup Location
+            </h3>
+            <app-map-picker
+              label="Search your starting point"
+              markerColor="blue"
+              [showCurrentLocation]="true"
+              (locationPicked)="onFromPicked($event)">
+            </app-map-picker>
+            <p *ngIf="fromLocation" class="location-confirmed">
+              <mat-icon>check_circle</mat-icon> {{ fromLocation.address }}
+            </p>
+            <mat-error *ngIf="routeForm.get('fromAddress')?.touched && !fromLocation">
+              Please pin a pickup location on the map
+            </mat-error>
+          </mat-card-content>
+        </mat-card>
+
+        <!-- Route auto-summary — appears once both pins are placed -->
+        <div *ngIf="fromLocation && toLocation" class="route-summary-card">
+          <div class="route-summary-row">
+            <div class="rs-point rs-point--from">
+              <span class="rs-dot rs-dot--from"></span>
+              <div>
+                <span class="rs-label">FROM</span>
+                <span class="rs-addr">{{ fromLocation.address }}</span>
+              </div>
+            </div>
+            <div class="rs-line">
+              <mat-icon class="rs-arrow">arrow_downward</mat-icon>
+              <span class="rs-km" *ngIf="estimatedKm !== null">
+                ~{{ estimatedKm }} km
+              </span>
+            </div>
+            <div class="rs-point rs-point--to">
+              <span class="rs-dot rs-dot--to"></span>
+              <div>
+                <span class="rs-label">TO</span>
+                <span class="rs-addr">{{ toLocation.address }}</span>
+              </div>
+            </div>
+          </div>
+          <p class="rs-note">
+            <mat-icon>info_outline</mat-icon>
+            Route identified automatically from your pins. No manual stops needed.
+          </p>
+        </div>
+
+        <!-- TO picker -->
+        <mat-card class="map-card">
+          <mat-card-content>
+            <h3 class="map-label">
+              <span class="dot dot--to"></span> Drop Location
+            </h3>
+            <app-map-picker
+              label="Search your destination"
+              markerColor="red"
+              (locationPicked)="onToPicked($event)">
+            </app-map-picker>
+            <p *ngIf="toLocation" class="location-confirmed">
+              <mat-icon>check_circle</mat-icon> {{ toLocation.address }}
+            </p>
+            <mat-error *ngIf="routeForm.get('toAddress')?.touched && !toLocation">
+              Please pin a drop location on the map
+            </mat-error>
+          </mat-card-content>
+        </mat-card>
+
+        <div class="step-actions">
+          <button mat-raised-button color="primary" matStepperNext
+                  [disabled]="!fromLocation || !toLocation">
+            Next: Ride Details <mat-icon>arrow_forward</mat-icon>
+          </button>
+        </div>
+
+      </form>
+    </mat-step>
+
+    <!-- ══ STEP 2: Details ════════════════════════════════════════ -->
+    <mat-step [stepControl]="detailsForm" label="Ride Details">
+      <form [formGroup]="detailsForm" novalidate>
+
+        <!-- Route recap chip at top of step 2 -->
+        <div class="route-recap" *ngIf="fromLocation && toLocation">
+          <span class="recap-from">{{ fromLocation.address }}</span>
+          <mat-icon>arrow_forward</mat-icon>
+          <span class="recap-to">{{ toLocation.address }}</span>
+          <span class="recap-km" *ngIf="estimatedKm">~{{ estimatedKm }} km</span>
+        </div>
+
+        <mat-card class="details-card">
+          <mat-card-content>
+
+            <!-- Date + Time -->
+            <div class="form-row two-col">
+              <mat-form-field appearance="outline">
+                <mat-label>Departure Date</mat-label>
+                <input matInput [matDatepicker]="dp"
+                       formControlName="departureDate" [min]="minDeparture" />
+                <mat-datepicker-toggle matSuffix [for]="dp"></mat-datepicker-toggle>
+                <mat-datepicker #dp></mat-datepicker>
+                <mat-error>Required</mat-error>
+              </mat-form-field>
+
+              <mat-form-field appearance="outline">
+                <mat-label>Departure Time</mat-label>
+                <input matInput formControlName="departureTime"
+                       type="time" placeholder="08:30" />
+                <mat-icon matSuffix>schedule</mat-icon>
+                <mat-error>Required</mat-error>
+              </mat-form-field>
+            </div>
+
+            <!-- Seats + Price -->
+            <div class="form-row two-col">
+              <mat-form-field appearance="outline">
+                <mat-label>Seats Offered</mat-label>
+                <input matInput formControlName="seatsTotal" type="number" min="1" max="10" />
+                <mat-icon matSuffix>event_seat</mat-icon>
+                <mat-error>Enter 1–10 seats</mat-error>
+              </mat-form-field>
+
+              <mat-form-field appearance="outline">
+                <mat-label>Price per Seat (₹)</mat-label>
+                <input matInput formControlName="pricePerSeat" type="number" min="1" />
+                <span matTextPrefix>₹&nbsp;</span>
+                <mat-error>Required</mat-error>
+              </mat-form-field>
+            </div>
+
+            <!-- Vehicle -->
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>Vehicle</mat-label>
+              <mat-select formControlName="vehicleId">
+                <mat-option *ngFor="let v of vehicles" [value]="v.id">
+                  {{ v.model }} · {{ v.numberPlate }} ({{ v.seats }} seats)
+                </mat-option>
+              </mat-select>
+              <mat-error>Select a vehicle</mat-error>
+              <mat-hint *ngIf="vehicles.length === 0">
+                No vehicles found — <a routerLink="/profile">add one in your profile</a>
+              </mat-hint>
+            </mat-form-field>
+
+            <mat-divider></mat-divider>
+
+            <!-- Ride options -->
+            <div class="toggles-section">
+              <h3>Ride Options</h3>
+
+              <div class="toggle-row">
+                <div class="toggle-label">
+                  <mat-icon>person</mat-icon>
+                  <span>Accept Passengers</span>
+                </div>
+                <mat-slide-toggle formControlName="acceptsPassengers" color="primary">
+                </mat-slide-toggle>
+              </div>
+
+              <div class="toggle-row">
+                <div class="toggle-label">
+                  <mat-icon>inventory_2</mat-icon>
+                  <span>Accept Parcels</span>
+                </div>
+                <mat-slide-toggle formControlName="acceptsParcels" color="primary">
+                </mat-slide-toggle>
+              </div>
+
+              <div class="toggle-row indent" *ngIf="detailsForm.get('acceptsParcels')?.value">
+                <mat-form-field appearance="outline">
+                  <mat-label>Max Parcel Size</mat-label>
+                  <mat-select formControlName="maxParcelSize">
+                    <mat-option value="SMALL">Small (fits in a backpack)</mat-option>
+                    <mat-option value="MEDIUM">Medium (shoebox size)</mat-option>
+                    <mat-option value="LARGE">Large (suitcase size)</mat-option>
+                  </mat-select>
+                </mat-form-field>
+              </div>
+
+              <div class="toggle-row" *ngIf="isFemaleDriver">
+                <div class="toggle-label">
+                  <mat-icon>female</mat-icon>
+                  <span>Women-Only Ride</span>
+                  <span class="badge">Only female passengers can book</span>
+                </div>
+                <mat-slide-toggle formControlName="womenOnly" color="warn">
+                </mat-slide-toggle>
+              </div>
+            </div>
+
+          </mat-card-content>
+        </mat-card>
+
+        <div class="step-actions">
+          <button mat-stroked-button matStepperPrevious type="button">
+            <mat-icon>arrow_back</mat-icon> Back
+          </button>
+          <button mat-raised-button color="primary" type="button"
+                  [disabled]="detailsForm.invalid || loading"
+                  (click)="submit()">
+            <mat-spinner *ngIf="loading" diameter="20" class="btn-spinner"></mat-spinner>
+            <span *ngIf="!loading"><mat-icon>publish</mat-icon> Post Ride</span>
+          </button>
+        </div>
+
+      </form>
+    </mat-step>
+
+  </mat-stepper>
+</div>

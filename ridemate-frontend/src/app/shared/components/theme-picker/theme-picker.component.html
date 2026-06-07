@@ -1,0 +1,54 @@
+<!-- Theme Picker — floating bottom-left -->
+<div class="tp-root">
+
+  <!-- ── FAB trigger ──────────────────────────────────────────── -->
+  <button
+    class="tp-fab"
+    [class.tp-fab--open]="isOpen"
+    (click)="toggle()"
+    aria-label="Change theme"
+    matTooltip="Appearance"
+    matTooltipPosition="right">
+    <mat-icon>{{ isOpen ? 'close' : 'palette' }}</mat-icon>
+  </button>
+
+  <!-- ── Panel ────────────────────────────────────────────────── -->
+  <div class="tp-panel" *ngIf="isOpen" role="dialog" aria-label="Theme settings">
+
+    <p class="tp-title">Appearance</p>
+
+    <!-- Light / Dark mode toggle -->
+    <div class="tp-section">
+      <span class="tp-section-label">Mode</span>
+      <div class="tp-mode-row">
+        <mat-icon class="mode-icon" [class.active]="!isDark" title="Light">light_mode</mat-icon>
+        <button
+          class="tp-toggle"
+          [class.tp-toggle--dark]="isDark"
+          (click)="toggleMode()"
+          [attr.aria-label]="isDark ? 'Switch to light mode' : 'Switch to dark mode'">
+          <span class="tp-thumb"></span>
+        </button>
+        <mat-icon class="mode-icon" [class.active]="isDark" title="Dark">dark_mode</mat-icon>
+      </div>
+    </div>
+
+    <!-- Colour swatches -->
+    <div class="tp-section">
+      <span class="tp-section-label">Colour</span>
+      <div class="tp-swatches">
+        <button
+          *ngFor="let c of colors"
+          class="tp-swatch"
+          [class.tp-swatch--active]="currentColor === c.key"
+          [style.background]="c.hex"
+          [attr.title]="c.label"
+          [attr.aria-label]="c.label + ' theme'"
+          (click)="setColor(c.key)">
+          <mat-icon *ngIf="currentColor === c.key" class="swatch-check">check</mat-icon>
+        </button>
+      </div>
+    </div>
+
+  </div>
+</div>

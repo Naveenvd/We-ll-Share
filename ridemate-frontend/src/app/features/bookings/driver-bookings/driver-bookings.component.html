@@ -1,0 +1,205 @@
+<div class="page-wrapper">
+
+  <div class="page-header">
+    <a mat-icon-button routerLink="/dashboard"><mat-icon>arrow_back</mat-icon></a>
+    <h2>Manage Bookings</h2>
+  </div>
+
+  <div *ngIf="loading" class="center-spinner">
+    <mat-spinner diameter="48"></mat-spinner>
+  </div>
+
+  <mat-tab-group *ngIf="!loading" animationDuration="200ms">
+
+    <!-- ── Tab 1: Pending approvals ── -->
+    <mat-tab [label]="'Pending (' + pending.length + ')'">
+      <div class="tab-content">
+
+        <div *ngIf="pending.length === 0" class="empty-state">
+          <mat-icon>check_circle_outline</mat-icon>
+          <p>No pending requests</p>
+        </div>
+
+        <mat-card *ngFor="let b of pending" class="booking-card">
+          <mat-card-content>
+            <div class="passenger-row">
+              <img *ngIf="b.passenger.photoUrl" [src]="b.passenger.photoUrl"
+                   class="avatar" alt="Photo" />
+              <div *ngIf="!b.passenger.photoUrl" class="avatar avatar--placeholder">
+                <mat-icon>person</mat-icon>
+              </div>
+              <div>
+                <strong>{{ b.passenger.name }}</strong>
+                <span class="gender-tag">{{ b.passenger.gender }}</span>
+                <div class="meta">{{ b.seatsBooked }} seat(s) · ₹{{ b.amount }}</div>
+              </div>
+            </div>
+
+            <div class="route-line">
+              {{ b.ride.fromLocation }} → {{ b.ride.toLocation }}
+              <span class="date">{{ b.ride.departureTime | date:'d MMM, h:mm a' }}</span>
+            </div>
+
+            <div class="card-actions">
+              <button mat-flat-button color="primary"
+                      [disabled]="busy[b.id]"
+                      (click)="approve(b.id)">
+                <mat-icon>check</mat-icon> Approve
+              </button>
+              <button mat-stroked-button color="warn"
+                      [disabled]="busy[b.id]"
+                      (click)="reject(b.id)">
+                <mat-icon>close</mat-icon> Reject
+              </button>
+              <a mat-stroked-button [routerLink]="['/bookings', b.id]">
+                <mat-icon>chat</mat-icon> Chat
+              </a>
+            </div>
+          </mat-card-content>
+        </mat-card>
+      </div>
+    </mat-tab>
+
+    <!-- ── Tab 2: Approved — ready to start ── -->
+    <mat-tab [label]="'Approved (' + approvedBookings.length + ')'">
+      <div class="tab-content">
+
+        <div *ngIf="approvedBookings.length === 0" class="empty-state">
+          <mat-icon>directions_car</mat-icon>
+          <p>No approved bookings</p>
+        </div>
+
+        <!-- Group by ride — just show start ride button once per ride -->
+        <ng-container *ngIf="approvedBookings.length > 0">
+          <div class="start-ride-bar">
+            <span>{{ approvedBookings.length }} passenger(s) approved</span>
+            <button mat-flat-button color="accent"
+                    (click)="startRide(approvedBookings[0].ride.id)">
+              <mat-icon>play_circle</mat-icon> Start Ride
+            </button>
+          </div>
+
+          <mat-card *ngFor="let b of approvedBookings" class="booking-card">
+            <mat-card-content>
+              <div class="passenger-row">
+                <img *ngIf="b.passenger.photoUrl" [src]="b.passenger.photoUrl"
+                     class="avatar" alt="Photo" />
+                <div *ngIf="!b.passenger.photoUrl" class="avatar avatar--placeholder">
+                  <mat-icon>person</mat-icon>
+                </div>
+                <div>
+                  <strong>{{ b.passenger.name }}</strong>
+                  <div class="meta">{{ b.seatsBooked }} seat(s) · ₹{{ b.amount }}</div>
+                </div>
+              </div>
+              <a mat-stroked-button [routerLink]="['/bookings', b.id]" style="margin-top:8px">
+                <mat-icon>chat</mat-icon> Chat
+              </a>
+            </mat-card-content>
+          </mat-card>
+        </ng-container>
+      </div>
+    </mat-tab>
+
+    <!-- ── Tab 3: Started — verify OTP ── -->
+    <mat-tab [label]="'In Progress (' + startedBookings.length + ')'">
+      <div class="tab-content">
+
+        <div *ngIf="startedBookings.length === 0" class="empty-state">
+          <mat-icon>pending_actions</mat-icon>
+          <p>No rides in progress</p>
+        </div>
+
+        <!-- Also show APPROVED bookings that still need OTP verification -->
+        <ng-container *ngFor="let b of all">
+          <mat-card *ngIf="b.status === 'APPROVED' && b.ride.status === 'STARTED'"
+                    class="booking-card">
+            <mat-card-content>
+              <div class="passenger-row">
+                <img *ngIf="b.passenger.photoUrl" [src]="b.passenger.photoUrl"
+                     class="avatar" alt="Photo" />
+                <div *ngIf="!b.passenger.photoUrl" class="avatar avatar--placeholder">
+                  <mat-icon>person</mat-icon>
+                </div>
+                <div>
+                  <strong>{{ b.passenger.name }}</strong>
+                  <div class="meta">OTP not yet verified</div>
+                </div>
+              </div>
+
+              <!-- OTP entry -->
+              <div class="otp-entry">
+                <mat-form-field appearance="outline" class="otp-field">
+                  <mat-label>Enter passenger OTP</mat-label>
+                  <input matInput maxlength="4" pattern="\d{4}"
+                         placeholder="0000"
+                         [(ngModel)]="otpInputs[b.id]" />
+                </mat-form-field>
+                <button mat-flat-button color="primary"
+                        [disabled]="busy[b.id]"
+                        (click)="verifyOtp(b.id)">
+                  Verify OTP
+                </button>
+              </div>
+            </mat-card-content>
+          </mat-card>
+        </ng-container>
+
+        <mat-card *ngFor="let b of startedBookings" class="booking-card">
+          <mat-card-content>
+            <div class="passenger-row">
+              <img *ngIf="b.passenger.photoUrl" [src]="b.passenger.photoUrl"
+                   class="avatar" alt="Photo" />
+              <div *ngIf="!b.passenger.photoUrl" class="avatar avatar--placeholder">
+                <mat-icon>person</mat-icon>
+              </div>
+              <div>
+                <strong>{{ b.passenger.name }}</strong>
+                <div class="meta boarded">✓ Boarded · ₹{{ b.amount }}</div>
+              </div>
+            </div>
+            <div class="card-actions">
+              <button mat-flat-button color="primary"
+                      (click)="complete(b.id)">
+                <mat-icon>flag</mat-icon> Mark Complete
+              </button>
+              <a mat-stroked-button [routerLink]="['/bookings', b.id]">
+                <mat-icon>chat</mat-icon> Chat
+              </a>
+            </div>
+          </mat-card-content>
+        </mat-card>
+      </div>
+    </mat-tab>
+
+    <!-- ── Tab 4: History ── -->
+    <mat-tab label="History">
+      <div class="tab-content">
+        <div *ngIf="closedBookings.length === 0" class="empty-state">
+          <mat-icon>history</mat-icon>
+          <p>No history yet</p>
+        </div>
+
+        <mat-card *ngFor="let b of closedBookings" class="booking-card booking-card--muted">
+          <mat-card-content>
+            <div class="card-top-row">
+              <span class="status-badge status-badge--{{ b.status.toLowerCase() }}">
+                {{ statusLabel(b.status) }}
+              </span>
+            </div>
+            <div class="passenger-row">
+              <div>
+                <strong>{{ b.passenger.name }}</strong>
+                <div class="meta">{{ b.seatsBooked }} seat(s) · ₹{{ b.amount }}</div>
+              </div>
+            </div>
+            <div class="route-line">
+              {{ b.ride.fromLocation }} → {{ b.ride.toLocation }}
+            </div>
+          </mat-card-content>
+        </mat-card>
+      </div>
+    </mat-tab>
+
+  </mat-tab-group>
+</div>

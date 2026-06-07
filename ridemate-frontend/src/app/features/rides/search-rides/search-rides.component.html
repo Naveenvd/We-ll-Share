@@ -1,0 +1,284 @@
+<!-- Find a Ride — Unified Map -->
+<div class="sr-page">
+
+  <!-- ══ Hero band ═════════════════════════════════════════════════ -->
+  <div class="sr-hero-band">
+    <div class="hero-inner">
+      <a class="hero-back" routerLink="/dashboard">
+        <mat-icon>arrow_back</mat-icon> Dashboard
+      </a>
+      <div class="hero-text">
+        <h1>Find Your <span class="hero-accent">Ride</span></h1>
+        <p>Search rides from your locality to any destination — office, college, airport</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ Floating search card ══════════════════════════════════════ -->
+  <div class="sr-card-wrap">
+    <div class="sr-card">
+
+      <!-- ── Location inputs ── -->
+      <div class="loc-pair">
+
+        <!-- FROM -->
+        <div class="loc-row loc-row--from">
+          <div class="loc-indicator">
+            <span class="loc-dot loc-dot--from"></span>
+            <div class="loc-vline"></div>
+          </div>
+          <div class="loc-body">
+            <div class="loc-lbl-row">
+              <span class="loc-lbl">PICKUP</span>
+              <button class="gps-btn"
+                      type="button"
+                      [disabled]="locatingUser"
+                      (click)="useCurrentLocation()"
+                      title="Use my current location">
+                <mat-spinner *ngIf="locatingUser" diameter="13" class="gps-spin"></mat-spinner>
+                <mat-icon *ngIf="!locatingUser">my_location</mat-icon>
+                <span>{{ locatingUser ? 'Locating…' : 'Use current location' }}</span>
+              </button>
+            </div>
+            <div class="loc-input-wrap" [class.loc-input-wrap--active]="showFromSugs">
+              <input class="loc-input"
+                     type="text"
+                     placeholder="e.g. Home, Locality, Bus stop…"
+                     [formControl]="fromCtrl"
+                     (blur)="hideFromSugs()" />
+              <mat-spinner *ngIf="fromSearching" diameter="16" class="loc-spin"></mat-spinner>
+              <mat-icon *ngIf="!fromSearching && fromLocation" class="loc-ok">check_circle</mat-icon>
+              <mat-icon *ngIf="!fromSearching && !fromLocation" class="loc-search-icon">search</mat-icon>
+            </div>
+            <p *ngIf="geoError" class="geo-error">
+              <mat-icon>error_outline</mat-icon> {{ geoError }}
+            </p>
+            <div class="sug-list" *ngIf="showFromSugs">
+              <div *ngFor="let s of fromSuggestions" class="sug-item" (mousedown)="selectFrom(s)">
+                <mat-icon>place</mat-icon><span>{{ s.display_name }}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- TO -->
+        <div class="loc-row loc-row--to">
+          <div class="loc-indicator">
+            <span class="loc-dot loc-dot--to"></span>
+          </div>
+          <div class="loc-body">
+            <span class="loc-lbl">DROP</span>
+            <div class="loc-input-wrap" [class.loc-input-wrap--active]="showToSugs">
+              <input class="loc-input"
+                     type="text"
+                     placeholder="e.g. Office, College, Airport, Station…"
+                     [formControl]="toCtrl"
+                     (blur)="hideToSugs()" />
+              <mat-spinner *ngIf="toSearching" diameter="16" class="loc-spin"></mat-spinner>
+              <mat-icon *ngIf="!toSearching && toLocation" class="loc-ok">check_circle</mat-icon>
+              <mat-icon *ngIf="!toSearching && !toLocation" class="loc-search-icon">search</mat-icon>
+            </div>
+            <div class="sug-list" *ngIf="showToSugs">
+              <div *ngFor="let s of toSuggestions" class="sug-item" (mousedown)="selectTo(s)">
+                <mat-icon>place</mat-icon><span>{{ s.display_name }}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div><!-- /loc-pair -->
+
+      <!-- ── Unified Map ── -->
+      <div class="route-map-wrap">
+        <div #routeMap class="route-map"></div>
+
+        <!-- Floating hint inside map -->
+        <div class="map-hint-pill">
+          <ng-container *ngIf="!fromLocation">
+            <mat-icon>touch_app</mat-icon>
+            Click map to set <strong>pickup</strong>
+          </ng-container>
+          <ng-container *ngIf="fromLocation && !toLocation">
+            <mat-icon>touch_app</mat-icon>
+            Now click to set <strong>drop</strong> location
+          </ng-container>
+          <ng-container *ngIf="fromLocation && toLocation && !searched">
+            <mat-icon>route</mat-icon>
+            Route preview · drag markers to fine-tune
+          </ng-container>
+          <ng-container *ngIf="searched && rides.length > 0">
+            <mat-icon>directions_car</mat-icon>
+            {{ rides.length }} ride{{ rides.length !== 1 ? 's' : '' }} shown · tap a pin to preview
+          </ng-container>
+          <ng-container *ngIf="searched && rides.length === 0">
+            <mat-icon>search_off</mat-icon>
+            No rides on map for this route
+          </ng-container>
+        </div>
+
+        <!-- Legend -->
+        <div class="map-legend" *ngIf="fromLocation || toLocation">
+          <span class="legend-item legend-item--from"><span class="legend-dot"></span> Pickup</span>
+          <span class="legend-item legend-item--to"><span class="legend-dot"></span> Drop</span>
+          <span class="legend-item legend-item--ride" *ngIf="searched && rides.length > 0">
+            <span class="legend-dot"></span> Available ride
+          </span>
+        </div>
+      </div>
+
+      <!-- ── Filters ── -->
+      <form [formGroup]="searchForm" novalidate>
+        <div class="filter-strip">
+
+          <mat-form-field appearance="outline" class="ff ff--date">
+            <mat-label>Travel Date</mat-label>
+            <input matInput [matDatepicker]="dp" formControlName="date" [min]="minDate" />
+            <mat-datepicker-toggle matSuffix [for]="dp"></mat-datepicker-toggle>
+            <mat-datepicker #dp></mat-datepicker>
+            <mat-error>Select a date</mat-error>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" class="ff ff--xs">
+            <mat-label>Seats</mat-label>
+            <input matInput type="number" formControlName="seats" min="1" max="10" />
+            <mat-icon matSuffix>event_seat</mat-icon>
+          </mat-form-field>
+
+          <div class="ff-toggle">
+            <mat-slide-toggle formControlName="womenOnly" color="primary">
+              <mat-icon class="female-icon">female</mat-icon> Women-only
+            </mat-slide-toggle>
+          </div>
+
+        </div>
+      </form>
+
+      <!-- Error -->
+      <div *ngIf="errorMessage" class="error-banner">
+        <mat-icon>error_outline</mat-icon> {{ errorMessage }}
+      </div>
+
+      <!-- Search CTA -->
+      <button class="search-cta"
+              [disabled]="loading || !fromLocation || !toLocation || searchForm.get('date')?.invalid"
+              (click)="search()">
+        <ng-container *ngIf="!loading">
+          <mat-icon>search</mat-icon> Search Rides
+        </ng-container>
+        <ng-container *ngIf="loading">
+          <mat-spinner diameter="20" strokeWidth="3" class="cta-spin"></mat-spinner>
+          Searching…
+        </ng-container>
+      </button>
+
+    </div><!-- /sr-card -->
+  </div><!-- /sr-card-wrap -->
+
+  <!-- ══ Results ════════════════════════════════════════════════════ -->
+  <div class="sr-results" *ngIf="searched">
+    <div class="results-inner">
+
+      <!-- Results bar -->
+      <div class="rh-bar">
+        <div class="rh-count">
+          <span class="rh-num">{{ totalElements }}</span>
+          <span class="rh-text">ride{{ totalElements !== 1 ? 's' : '' }} found</span>
+        </div>
+        <div class="rh-route" *ngIf="fromLocation && toLocation">
+          <span class="rh-loc rh-loc--from">{{ fromLocation.address }}</span>
+          <mat-icon>arrow_forward</mat-icon>
+          <span class="rh-loc rh-loc--to">{{ toLocation.address }}</span>
+        </div>
+      </div>
+
+      <!-- Empty state -->
+      <div *ngIf="!loading && rides.length === 0" class="empty-state">
+        <div class="empty-blob"><mat-icon>search_off</mat-icon></div>
+        <h3>No rides found</h3>
+        <p>Try a different date or adjust your route on the map above</p>
+      </div>
+
+      <!-- Ride cards -->
+      <div class="ride-list">
+        <div *ngFor="let ride of rides" class="ride-card" (click)="viewRide(ride.id)">
+
+          <!-- Price badge -->
+          <div class="rc-price-badge">
+            <span class="rc-amount">₹{{ ride.pricePerSeat }}</span>
+            <span class="rc-unit">/ seat</span>
+          </div>
+
+          <!-- Driver -->
+          <div class="rc-driver">
+            <img *ngIf="ride.driver.photoUrl" [src]="ride.driver.photoUrl"
+                 class="rc-avatar" [alt]="ride.driver.name" />
+            <div *ngIf="!ride.driver.photoUrl" class="rc-avatar rc-avatar--ph">
+              <mat-icon>person</mat-icon>
+            </div>
+            <div class="rc-driver-info">
+              <span class="rc-name">{{ ride.driver.name }}</span>
+              <span class="rc-rating">
+                <mat-icon class="rc-star">star</mat-icon>
+                {{ ride.driver.avgRating | number:'1.1-1' }}
+                <span class="rc-total">· {{ ride.driver.totalRides }} rides</span>
+              </span>
+            </div>
+          </div>
+
+          <!-- Route strip -->
+          <div class="rc-route">
+            <div class="rc-rp">
+              <span class="rc-rdot rc-rdot--from"></span>
+              <span class="rc-raddr">{{ ride.fromLocation }}</span>
+            </div>
+            <mat-icon class="rc-rarrow">arrow_forward</mat-icon>
+            <div class="rc-rp">
+              <span class="rc-rdot rc-rdot--to"></span>
+              <span class="rc-raddr">{{ ride.toLocation }}</span>
+            </div>
+          </div>
+
+          <!-- Chips -->
+          <div class="rc-chips">
+            <span class="rc-chip rc-chip--time">
+              <mat-icon>schedule</mat-icon>
+              {{ ride.departureTime | date:'EEE d MMM · h:mm a' }}
+            </span>
+            <span class="rc-chip rc-chip--seats">
+              <mat-icon>event_seat</mat-icon>
+              {{ ride.seatsAvailable }} seat{{ ride.seatsAvailable !== 1 ? 's' : '' }} left
+            </span>
+            <span *ngIf="ride.womenOnly" class="rc-chip rc-chip--women">
+              <mat-icon>female</mat-icon> Women-only
+            </span>
+            <span *ngIf="ride.acceptsParcels" class="rc-chip rc-chip--parcel">
+              <mat-icon>inventory_2</mat-icon> Parcels OK
+            </span>
+          </div>
+
+          <!-- Footer -->
+          <div class="rc-footer">
+            <span class="rc-vehicle" *ngIf="ride.vehicle">
+              <mat-icon>directions_car</mat-icon>
+              {{ ride.vehicle.model }} · {{ ride.vehicle.color }} · {{ ride.vehicle.numberPlate }}
+            </span>
+            <button class="rc-cta" (click)="viewRide(ride.id); $event.stopPropagation()">
+              View &amp; Book <mat-icon>arrow_forward</mat-icon>
+            </button>
+          </div>
+
+        </div><!-- /ride-card -->
+      </div><!-- /ride-list -->
+
+      <mat-paginator
+        *ngIf="totalElements > pageSize"
+        [length]="totalElements"
+        [pageSize]="pageSize"
+        (page)="onPage($event)"
+        showFirstLastButtons>
+      </mat-paginator>
+
+    </div>
+  </div>
+
+</div>

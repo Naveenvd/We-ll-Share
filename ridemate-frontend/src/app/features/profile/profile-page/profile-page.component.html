@@ -1,0 +1,380 @@
+<!-- Profile Page with tabs: Info · Documents · Vehicles · Emergency Contacts · Reviews · Blocked Users -->
+
+<div class="profile-wrapper" *ngIf="!loadingProfile; else spinner">
+
+  <!-- ── Header card ─────────────────────────────────────────────── -->
+  <mat-card class="header-card">
+    <div class="header-content">
+
+      <!-- Avatar -->
+      <div class="avatar-wrap">
+        <img *ngIf="profile?.photoUrl" [src]="profile!.photoUrl" class="avatar" alt="Profile photo" />
+        <div *ngIf="!profile?.photoUrl" class="avatar avatar--placeholder">
+          <mat-icon>person</mat-icon>
+        </div>
+        <label class="avatar-upload-btn" [class.loading]="uploadingPhoto" title="Change photo">
+          <mat-icon>photo_camera</mat-icon>
+          <input type="file" accept=".jpg,.jpeg,.png" hidden (change)="onPhotoSelected($event)" />
+        </label>
+      </div>
+
+      <!-- User summary -->
+      <div class="header-info">
+        <h2>{{ profile?.name }}</h2>
+        <p class="email">{{ profile?.email }}</p>
+        <div class="meta-row">
+          <span class="chip chip--status" [ngClass]="'chip--' + profile?.status?.toLowerCase()">
+            {{ profile?.status | titlecase }}
+          </span>
+          <span class="chip chip--rating">
+            <mat-icon>star</mat-icon> {{ profile?.avgRating | number:'1.1-1' }}
+          </span>
+          <span class="chip chip--rides">
+            <mat-icon>directions_car</mat-icon> {{ profile?.totalRides }} rides
+          </span>
+        </div>
+        <!-- Rejected reason -->
+        <div *ngIf="profile?.status === 'REJECTED'" class="notice notice--error">
+          <mat-icon>cancel</mat-icon>
+          Rejected: {{ profile?.rejectionReason }}
+        </div>
+        <!-- Pending notice -->
+        <div *ngIf="profile?.status === 'PENDING_VERIFICATION'" class="notice notice--warning">
+          <mat-icon>hourglass_top</mat-icon>
+          Pending admin verification. Upload Aadhaar below.
+        </div>
+      </div>
+    </div>
+  </mat-card>
+
+  <!-- ── Tabs ────────────────────────────────────────────────────── -->
+  <mat-card class="tabs-card">
+    <mat-tab-group animationDuration="200ms">
+
+      <!-- ══ TAB 1: Personal Info ══════════════════════════════════ -->
+      <mat-tab label="Personal Info">
+        <div class="tab-body">
+          <form [formGroup]="profileForm" (ngSubmit)="saveProfile()" novalidate>
+
+            <div class="form-row">
+              <mat-form-field appearance="outline" class="full-width">
+                <mat-label>Full Name</mat-label>
+                <input matInput formControlName="name" />
+                <mat-error>Name is required (min 2 chars)</mat-error>
+              </mat-form-field>
+            </div>
+
+            <div class="form-row two-col">
+              <mat-form-field appearance="outline">
+                <mat-label>Gender</mat-label>
+                <mat-select formControlName="gender">
+                  <mat-option value="MALE">Male</mat-option>
+                  <mat-option value="FEMALE">Female</mat-option>
+                  <mat-option value="OTHER">Other</mat-option>
+                </mat-select>
+              </mat-form-field>
+
+              <mat-form-field appearance="outline">
+                <mat-label>Date of Birth</mat-label>
+                <input matInput [matDatepicker]="dob" formControlName="dob"
+                       [max]="maxDob" />
+                <mat-datepicker-toggle matSuffix [for]="dob"></mat-datepicker-toggle>
+                <mat-datepicker #dob startView="multi-year"></mat-datepicker>
+              </mat-form-field>
+            </div>
+
+            <!-- Read-only fields -->
+            <div class="readonly-row">
+              <span class="readonly-label">Phone</span>
+              <span class="readonly-value">{{ profile?.phone }}</span>
+              <mat-icon *ngIf="profile?.phoneVerified" class="verified-icon">verified</mat-icon>
+            </div>
+            <div class="readonly-row">
+              <span class="readonly-label">Email</span>
+              <span class="readonly-value">{{ profile?.email }}</span>
+            </div>
+
+            <button mat-raised-button color="primary" type="submit"
+                    [disabled]="profileForm.invalid || savingProfile">
+              <mat-spinner *ngIf="savingProfile" diameter="18" class="btn-spinner"></mat-spinner>
+              <span *ngIf="!savingProfile">Save Changes</span>
+            </button>
+
+          </form>
+        </div>
+      </mat-tab>
+
+      <!-- ══ TAB 2: Documents ══════════════════════════════════════ -->
+      <mat-tab label="Documents">
+        <div class="tab-body">
+
+          <!-- Aadhaar card -->
+          <div class="doc-section">
+            <h3>Aadhaar Card <span class="required-badge">Required</span></h3>
+
+            <div *ngIf="profile?.aadhaarDocUrl" class="doc-current">
+              <a [href]="profile!.aadhaarDocUrl" target="_blank" class="doc-link">
+                <mat-icon>picture_as_pdf</mat-icon>
+                View uploaded Aadhaar
+              </a>
+              <span class="doc-number">Number: {{ profile?.aadhaarNumber }}</span>
+            </div>
+
+            <form [formGroup]="aadhaarForm" novalidate class="upload-form">
+              <mat-form-field appearance="outline" class="full-width">
+                <mat-label>Aadhaar Number (12 digits)</mat-label>
+                <input matInput formControlName="aadhaarNumber"
+                       type="text" inputmode="numeric" maxlength="12" />
+                <mat-error *ngIf="aadhaarForm.get('aadhaarNumber')?.hasError('pattern')">
+                  Must be exactly 12 digits
+                </mat-error>
+              </mat-form-field>
+
+              <div class="file-pick-row">
+                <label class="file-pick-btn">
+                  <mat-icon>upload_file</mat-icon>
+                  Choose File (JPG/PNG/PDF)
+                  <input type="file" accept=".jpg,.jpeg,.png,.pdf" hidden
+                         (change)="onAadhaarFileSelected($event)" />
+                </label>
+                <span class="file-name">{{ fileName }}</span>
+              </div>
+
+              <button mat-raised-button color="accent" type="button"
+                      [disabled]="aadhaarForm.invalid || !aadhaarFile || uploadingAadhaar"
+                      (click)="submitAadhaar()">
+                <mat-spinner *ngIf="uploadingAadhaar" diameter="18" class="btn-spinner"></mat-spinner>
+                <span *ngIf="!uploadingAadhaar">Upload Aadhaar</span>
+              </button>
+            </form>
+          </div>
+
+          <mat-divider></mat-divider>
+
+          <!-- Driving Licence card -->
+          <div class="doc-section">
+            <h3>Driving Licence <span class="optional-badge">Optional — needed to post rides</span></h3>
+
+            <div *ngIf="profile?.dlDocUrl" class="doc-current">
+              <a [href]="profile!.dlDocUrl" target="_blank" class="doc-link">
+                <mat-icon>picture_as_pdf</mat-icon>
+                View uploaded DL
+              </a>
+              <span class="doc-number">Number: {{ profile?.dlNumber }}</span>
+            </div>
+
+            <form [formGroup]="dlForm" novalidate class="upload-form">
+              <mat-form-field appearance="outline" class="full-width">
+                <mat-label>DL Number</mat-label>
+                <input matInput formControlName="dlNumber" />
+                <mat-error>Enter a valid DL number (min 10 chars)</mat-error>
+              </mat-form-field>
+
+              <div class="file-pick-row">
+                <label class="file-pick-btn">
+                  <mat-icon>upload_file</mat-icon>
+                  Choose File (JPG/PNG/PDF)
+                  <input type="file" accept=".jpg,.jpeg,.png,.pdf" hidden
+                         (change)="onDlFileSelected($event)" />
+                </label>
+                <span class="file-name">{{ dlFileName }}</span>
+              </div>
+
+              <button mat-raised-button color="accent" type="button"
+                      [disabled]="dlForm.invalid || !dlFile || uploadingDl"
+                      (click)="submitDl()">
+                <mat-spinner *ngIf="uploadingDl" diameter="18" class="btn-spinner"></mat-spinner>
+                <span *ngIf="!uploadingDl">Upload DL</span>
+              </button>
+            </form>
+          </div>
+
+        </div>
+      </mat-tab>
+
+      <!-- ══ TAB 3: Vehicles ═══════════════════════════════════════ -->
+      <mat-tab label="Vehicles">
+        <div class="tab-body">
+
+          <div class="section-header">
+            <h3>My Vehicles</h3>
+            <button mat-raised-button color="primary" (click)="openAddVehicle()">
+              <mat-icon>add</mat-icon> Add Vehicle
+            </button>
+          </div>
+
+          <div *ngIf="vehicles.length === 0" class="empty-state">
+            <mat-icon>directions_car</mat-icon>
+            <p>No vehicles added yet. Add one to post rides.</p>
+          </div>
+
+          <mat-card *ngFor="let v of vehicles" class="list-card">
+            <mat-card-content>
+              <div class="list-card-row">
+                <mat-icon class="list-icon">directions_car</mat-icon>
+                <div class="list-card-text">
+                  <strong>{{ v.model }}</strong> · {{ v.color }}
+                  <br/>
+                  <span class="plate">{{ v.numberPlate }}</span>
+                  <span class="seats">{{ v.seats }} seats</span>
+                </div>
+                <div class="list-card-actions">
+                  <button mat-icon-button (click)="openEditVehicle(v)" title="Edit">
+                    <mat-icon>edit</mat-icon>
+                  </button>
+                  <button mat-icon-button color="warn" (click)="deleteVehicle(v)" title="Delete">
+                    <mat-icon>delete</mat-icon>
+                  </button>
+                </div>
+              </div>
+            </mat-card-content>
+          </mat-card>
+        </div>
+      </mat-tab>
+
+      <!-- ══ TAB 4: Emergency Contacts ════════════════════════════ -->
+      <mat-tab label="Emergency Contacts">
+        <div class="tab-body">
+
+          <div class="section-header">
+            <h3>Emergency Contacts <span class="count-badge">{{ contacts.length }}/3</span></h3>
+            <button mat-raised-button color="primary"
+                    [disabled]="contacts.length >= 3"
+                    (click)="openAddContact()">
+              <mat-icon>add</mat-icon> Add Contact
+            </button>
+          </div>
+
+          <p class="hint-text">
+            <mat-icon>info</mat-icon>
+            These contacts are notified automatically when you trigger an SOS alert during a trip.
+          </p>
+
+          <div *ngIf="contacts.length === 0" class="empty-state">
+            <mat-icon>contact_phone</mat-icon>
+            <p>No emergency contacts added yet.</p>
+          </div>
+
+          <mat-card *ngFor="let c of contacts" class="list-card">
+            <mat-card-content>
+              <div class="list-card-row">
+                <mat-icon class="list-icon">contact_phone</mat-icon>
+                <div class="list-card-text">
+                  <strong>{{ c.name }}</strong> · {{ c.relation }}
+                  <br/>
+                  <span class="phone-num">{{ c.phone }}</span>
+                </div>
+                <div class="list-card-actions">
+                  <button mat-icon-button (click)="openEditContact(c)" title="Edit">
+                    <mat-icon>edit</mat-icon>
+                  </button>
+                  <button mat-icon-button color="warn" (click)="deleteContact(c)" title="Delete">
+                    <mat-icon>delete</mat-icon>
+                  </button>
+                </div>
+              </div>
+            </mat-card-content>
+          </mat-card>
+        </div>
+      </mat-tab>
+
+      <!-- ══ TAB 5: Reviews ══════════════════════════════════════ -->
+      <mat-tab label="My Reviews ({{ reviews.length }})">
+        <div class="tab-body">
+
+          <p class="hint-text">
+            <mat-icon>star</mat-icon>
+            Reviews left by other users after your rides and parcel deliveries.
+          </p>
+
+          <div *ngIf="loadingReviews" class="center-spinner"><mat-spinner diameter="32"></mat-spinner></div>
+
+          <div *ngIf="!loadingReviews && reviews.length === 0" class="empty-state">
+            <mat-icon>star_border</mat-icon>
+            <p>No reviews yet.</p>
+          </div>
+
+          <mat-card *ngFor="let r of reviews" class="list-card review-card">
+            <mat-card-content>
+              <div class="review-header">
+                <!-- Reviewer avatar -->
+                <img *ngIf="r.reviewerPhotoUrl" [src]="r.reviewerPhotoUrl"
+                     class="blocked-avatar" alt="Reviewer" />
+                <div *ngIf="!r.reviewerPhotoUrl"
+                     class="blocked-avatar blocked-avatar--placeholder">
+                  <mat-icon>person</mat-icon>
+                </div>
+                <div class="review-meta">
+                  <strong>{{ r.reviewerName }}</strong>
+                  <div class="star-row">
+                    <span *ngFor="let s of [1,2,3,4,5]" class="star"
+                          [class.filled]="s <= r.rating">★</span>
+                    <span class="review-date">
+                      {{ r.createdAt | date:'dd MMM yyyy' }}
+                    </span>
+                  </div>
+                </div>
+              </div>
+              <p *ngIf="r.comment" class="review-comment">{{ r.comment }}</p>
+            </mat-card-content>
+          </mat-card>
+
+        </div>
+      </mat-tab>
+
+      <!-- ══ TAB 6: Blocked Users ═════════════════════════════════ -->
+      <mat-tab label="Blocked Users ({{ blockedUsers.length }})">
+        <div class="tab-body">
+
+          <p class="hint-text">
+            <mat-icon>info</mat-icon>
+            Blocked users cannot send you messages or see your profile details.
+            You can unblock them at any time.
+          </p>
+
+          <div *ngIf="blockedUsers.length === 0" class="empty-state">
+            <mat-icon>block</mat-icon>
+            <p>You haven't blocked anyone.</p>
+          </div>
+
+          <mat-card *ngFor="let b of blockedUsers" class="list-card">
+            <mat-card-content>
+              <div class="list-card-row">
+                <!-- Avatar or placeholder -->
+                <img *ngIf="b.blockedUserPhotoUrl"
+                     [src]="b.blockedUserPhotoUrl"
+                     class="blocked-avatar"
+                     alt="User photo" />
+                <div *ngIf="!b.blockedUserPhotoUrl" class="blocked-avatar blocked-avatar--placeholder">
+                  <mat-icon>person</mat-icon>
+                </div>
+
+                <div class="list-card-text">
+                  <strong>{{ b.blockedUserName }}</strong>
+                  <br/>
+                  <span class="blocked-date">Blocked {{ b.createdAt | date:'dd MMM yyyy' }}</span>
+                </div>
+
+                <div class="list-card-actions">
+                  <button mat-stroked-button color="primary"
+                          (click)="unblockUser(b)">
+                    <mat-icon>lock_open</mat-icon> Unblock
+                  </button>
+                </div>
+              </div>
+            </mat-card-content>
+          </mat-card>
+
+        </div>
+      </mat-tab>
+
+    </mat-tab-group>
+  </mat-card>
+</div>
+
+<!-- Loading spinner -->
+<ng-template #spinner>
+  <div class="center-spinner">
+    <mat-spinner diameter="48"></mat-spinner>
+  </div>
+</ng-template>

@@ -1,0 +1,179 @@
+<div class="page-wrapper">
+
+  <div class="page-header">
+    <a mat-icon-button routerLink="/dashboard"><mat-icon>arrow_back</mat-icon></a>
+    <h2>Parcel Requests</h2>
+  </div>
+
+  <div *ngIf="loading" class="center-spinner"><mat-spinner diameter="48"></mat-spinner></div>
+
+  <mat-tab-group *ngIf="!loading" animationDuration="200ms">
+
+    <!-- ── Tab 1: Pending ── -->
+    <mat-tab [label]="'Pending (' + pending.length + ')'">
+      <div class="tab-content">
+        <div *ngIf="pending.length === 0" class="empty-state">
+          <mat-icon>check_circle_outline</mat-icon><p>No pending requests</p>
+        </div>
+
+        <mat-card *ngFor="let p of pending" class="parcel-card">
+          <mat-card-content>
+            <div class="sender-row">
+              <img *ngIf="p.sender.photoUrl" [src]="p.sender.photoUrl" class="avatar" alt="Sender" />
+              <div *ngIf="!p.sender.photoUrl" class="avatar avatar--placeholder"><mat-icon>person</mat-icon></div>
+              <div>
+                <strong>{{ p.sender.name }}</strong>
+                <div class="meta">{{ p.size }} · ₹{{ p.price }}</div>
+              </div>
+              <span class="size-tag">{{ p.size }}</span>
+            </div>
+
+            <div class="description">{{ p.description }}</div>
+            <div class="route-line">{{ p.fromLocation }} → {{ p.toLocation }}</div>
+
+            <div *ngIf="p.photoUrl" class="parcel-img-row">
+              <img [src]="p.photoUrl" class="parcel-thumb" alt="Parcel" />
+            </div>
+
+            <div class="card-actions">
+              <button mat-flat-button color="primary"  [disabled]="busy[p.id]" (click)="accept(p.id)">
+                <mat-icon>check</mat-icon> Accept
+              </button>
+              <button mat-stroked-button color="warn"  [disabled]="busy[p.id]" (click)="reject(p.id)">
+                <mat-icon>close</mat-icon> Reject
+              </button>
+              <a mat-stroked-button [routerLink]="['/parcels', p.id]">
+                <mat-icon>chat</mat-icon> Chat
+              </a>
+            </div>
+          </mat-card-content>
+        </mat-card>
+      </div>
+    </mat-tab>
+
+    <!-- ── Tab 2: Accepted — verify pickup ── -->
+    <mat-tab [label]="'Pickup (' + accepted.length + ')'">
+      <div class="tab-content">
+        <div *ngIf="accepted.length === 0" class="empty-state">
+          <mat-icon>local_shipping</mat-icon><p>Nothing to pick up yet</p>
+        </div>
+
+        <mat-card *ngFor="let p of accepted" class="parcel-card">
+          <mat-card-content>
+            <div class="sender-row">
+              <img *ngIf="p.sender.photoUrl" [src]="p.sender.photoUrl" class="avatar" alt="Sender" />
+              <div *ngIf="!p.sender.photoUrl" class="avatar avatar--placeholder"><mat-icon>person</mat-icon></div>
+              <div>
+                <strong>{{ p.sender.name }}</strong>
+                <div class="meta">{{ p.size }} · ₹{{ p.price }}</div>
+              </div>
+            </div>
+            <div class="description">{{ p.description }}</div>
+
+            <!-- Before-photo upload -->
+            <div class="photo-upload-section">
+              <label class="upload-label">
+                <mat-icon>add_photo_alternate</mat-icon>
+                {{ beforePhotos[p.id] ? 'Photo selected ✓' : 'Take Before Photo (optional)' }}
+                <input type="file" accept="image/*" hidden (change)="onBeforePhoto($event, p.id)" />
+              </label>
+            </div>
+
+            <!-- OTP entry -->
+            <div class="otp-entry">
+              <mat-form-field appearance="outline" class="otp-field">
+                <mat-label>Sender's Pickup OTP</mat-label>
+                <input matInput maxlength="4" pattern="\d{4}" placeholder="0000"
+                       [(ngModel)]="otpInputs[p.id]" />
+              </mat-form-field>
+              <button mat-flat-button color="primary" [disabled]="busy[p.id]" (click)="verifyPickup(p.id)">
+                Verify Pickup
+              </button>
+            </div>
+          </mat-card-content>
+        </mat-card>
+      </div>
+    </mat-tab>
+
+    <!-- ── Tab 3: In Transit — verify delivery ── -->
+    <mat-tab [label]="'In Transit (' + inTransit.length + ')'">
+      <div class="tab-content">
+        <div *ngIf="inTransit.length === 0" class="empty-state">
+          <mat-icon>pending_actions</mat-icon><p>No parcels in transit</p>
+        </div>
+
+        <mat-card *ngFor="let p of inTransit" class="parcel-card">
+          <mat-card-content>
+            <div class="sender-row">
+              <img *ngIf="p.sender.photoUrl" [src]="p.sender.photoUrl" class="avatar" alt="Sender" />
+              <div *ngIf="!p.sender.photoUrl" class="avatar avatar--placeholder"><mat-icon>person</mat-icon></div>
+              <div>
+                <strong>{{ p.sender.name }}</strong>
+                <div class="meta">{{ p.fromLocation }} → {{ p.toLocation }}</div>
+              </div>
+            </div>
+
+            <!-- Before photo preview -->
+            <div *ngIf="p.beforePhotoUrl" class="proof-photo-row">
+              <span class="proof-label">Pickup photo</span>
+              <img [src]="p.beforePhotoUrl" class="proof-thumb" alt="Before" />
+            </div>
+
+            <!-- After-photo upload -->
+            <div class="photo-upload-section">
+              <label class="upload-label">
+                <mat-icon>add_photo_alternate</mat-icon>
+                {{ afterPhotos[p.id] ? 'After photo selected ✓' : 'Take Delivery Photo (optional)' }}
+                <input type="file" accept="image/*" hidden (change)="onAfterPhoto($event, p.id)" />
+              </label>
+            </div>
+
+            <!-- OTP entry -->
+            <div class="otp-entry">
+              <mat-form-field appearance="outline" class="otp-field">
+                <mat-label>Receiver's Delivery OTP</mat-label>
+                <input matInput maxlength="4" pattern="\d{4}" placeholder="0000"
+                       [(ngModel)]="otpInputs[p.id]" />
+              </mat-form-field>
+              <button mat-flat-button color="primary" [disabled]="busy[p.id]" (click)="verifyDelivery(p.id)">
+                Confirm Delivery
+              </button>
+            </div>
+
+            <a mat-stroked-button [routerLink]="['/parcels', p.id]" style="margin-top:8px">
+              <mat-icon>chat</mat-icon> Chat
+            </a>
+          </mat-card-content>
+        </mat-card>
+      </div>
+    </mat-tab>
+
+    <!-- ── Tab 4: History ── -->
+    <mat-tab label="History">
+      <div class="tab-content">
+        <div *ngIf="closed.length === 0" class="empty-state">
+          <mat-icon>history</mat-icon><p>No history yet</p>
+        </div>
+        <mat-card *ngFor="let p of closed" class="parcel-card parcel-card--muted">
+          <mat-card-content>
+            <div class="card-top-row">
+              <span class="status-badge status-badge--{{ p.status.toLowerCase().replace('_','-') }}">
+                {{ statusLabel(p.status) }}
+              </span>
+            </div>
+            <div class="route-line">{{ p.fromLocation }} → {{ p.toLocation }}</div>
+            <div class="meta">{{ p.size }} · ₹{{ p.price }} · {{ p.sender.name }}</div>
+
+            <!-- Proof photos if delivered -->
+            <div *ngIf="p.beforePhotoUrl || p.afterPhotoUrl" class="proof-photos-row">
+              <img *ngIf="p.beforePhotoUrl" [src]="p.beforePhotoUrl" class="proof-thumb" alt="Before" />
+              <mat-icon *ngIf="p.beforePhotoUrl && p.afterPhotoUrl">arrow_forward</mat-icon>
+              <img *ngIf="p.afterPhotoUrl"  [src]="p.afterPhotoUrl"  class="proof-thumb" alt="After"  />
+            </div>
+          </mat-card-content>
+        </mat-card>
+      </div>
+    </mat-tab>
+
+  </mat-tab-group>
+</div>

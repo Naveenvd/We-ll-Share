@@ -1,0 +1,164 @@
+<!-- Admin Verification Queue -->
+<div class="admin-layout" [class.sidebar-open]="isMobileMenuOpen">
+
+  <!-- Mobile overlay -->
+  <div class="admin-overlay" (click)="closeMobileMenu()"></div>
+
+  <!-- ── Sidebar ──────────────────────────────────────────────── -->
+  <nav class="admin-sidebar">
+    <button class="sidebar-close-btn" (click)="closeMobileMenu()">
+      <mat-icon>close</mat-icon>
+    </button>
+
+    <div class="sidebar-brand">
+      <div class="brand-icon-wrap">
+        <mat-icon>admin_panel_settings</mat-icon>
+      </div>
+      <div class="brand-text">
+        <span class="brand-name">We'll Share</span>
+        <span class="brand-sub">Admin Console</span>
+      </div>
+    </div>
+
+    <nav class="sidebar-nav">
+      <a routerLink="/admin/dashboard" class="nav-item"
+         routerLinkActive="nav-item--active"
+         [routerLinkActiveOptions]="{exact:true}"
+         (click)="closeMobileMenu()">
+        <span class="nav-icon"><mat-icon>dashboard</mat-icon></span>
+        <span>Dashboard</span>
+      </a>
+      <a routerLink="/admin/verifications" class="nav-item"
+         routerLinkActive="nav-item--active"
+         (click)="closeMobileMenu()">
+        <span class="nav-icon"><mat-icon>verified_user</mat-icon></span>
+        <span>Verifications</span>
+      </a>
+      <a routerLink="/admin/users" class="nav-item"
+         routerLinkActive="nav-item--active"
+         (click)="closeMobileMenu()">
+        <span class="nav-icon"><mat-icon>group</mat-icon></span>
+        <span>Users</span>
+      </a>
+    </nav>
+
+    <div class="sidebar-footer">
+      <button class="nav-item nav-item--logout" (click)="logout()">
+        <span class="nav-icon"><mat-icon>logout</mat-icon></span>
+        <span>Logout</span>
+      </button>
+    </div>
+  </nav>
+
+  <!-- ── Main ─────────────────────────────────────────────────── -->
+  <main class="admin-main">
+
+    <!-- Topbar -->
+    <header class="admin-topbar">
+      <button class="hamburger-btn" (click)="toggleMobileMenu()">
+        <mat-icon>menu</mat-icon>
+      </button>
+      <div class="topbar-title">
+        <h2>Verifications</h2>
+        <p>Review and approve or reject pending user identity documents</p>
+      </div>
+      <div class="topbar-actions">
+        <div class="admin-avatar">
+          <mat-icon>admin_panel_settings</mat-icon>
+        </div>
+      </div>
+    </header>
+
+    <!-- ── Content ── -->
+
+    <div *ngIf="loading" class="center-spinner">
+      <mat-spinner diameter="40"></mat-spinner>
+    </div>
+
+    <div *ngIf="!loading && users.length === 0" class="empty-state">
+      <div class="empty-icon-wrap">
+        <mat-icon>check_circle</mat-icon>
+      </div>
+      <p>No pending verifications — all clear!</p>
+    </div>
+
+    <!-- User cards -->
+    <mat-card *ngFor="let u of users" class="verify-card">
+      <mat-card-content>
+
+        <div class="card-header">
+          <div class="user-info">
+            <img *ngIf="u.photoUrl" [src]="u.photoUrl" class="thumb" alt="photo" />
+            <div *ngIf="!u.photoUrl" class="thumb thumb--placeholder">
+              <mat-icon>person</mat-icon>
+            </div>
+            <div>
+              <strong>{{ u.name }}</strong>
+              <div class="meta">{{ u.email }} · {{ u.phone }}</div>
+              <div class="meta">{{ u.gender | titlecase }} · Joined {{ u.createdAt | date:'mediumDate' }}</div>
+            </div>
+          </div>
+          <div class="action-btns">
+            <button mat-flat-button color="primary" (click)="approve(u)">
+              <mat-icon>check_circle</mat-icon> Approve
+            </button>
+            <button mat-flat-button color="warn" (click)="reject(u)">
+              <mat-icon>cancel</mat-icon> Reject
+            </button>
+          </div>
+        </div>
+
+        <mat-divider></mat-divider>
+
+        <!-- Documents row -->
+        <div class="docs-row">
+
+          <!-- Aadhaar -->
+          <div class="doc-item">
+            <span class="doc-label">Aadhaar</span>
+            <span *ngIf="u.aadhaarDocUrl; else noDoc">
+              #{{ u.aadhaarNumber }}
+              <a [href]="u.aadhaarDocUrl" target="_blank" class="view-link">
+                <mat-icon>open_in_new</mat-icon> View
+              </a>
+            </span>
+            <ng-template #noDoc>
+              <span class="missing">Not uploaded</span>
+            </ng-template>
+          </div>
+
+          <!-- DL -->
+          <div class="doc-item">
+            <span class="doc-label">Driving Licence</span>
+            <span *ngIf="u.dlDocUrl">
+              #{{ u.dlNumber }}
+              <a [href]="u.dlDocUrl" target="_blank" class="view-link">
+                <mat-icon>open_in_new</mat-icon> View
+              </a>
+            </span>
+            <span *ngIf="!u.dlDocUrl" class="optional">Not provided</span>
+          </div>
+
+          <!-- Phone verified -->
+          <div class="doc-item">
+            <span class="doc-label">Phone Verified</span>
+            <mat-icon *ngIf="u.phoneVerified" class="ok-icon">verified</mat-icon>
+            <mat-icon *ngIf="!u.phoneVerified" class="warn-icon">phone_disabled</mat-icon>
+          </div>
+
+        </div>
+
+      </mat-card-content>
+    </mat-card>
+
+    <!-- Paginator -->
+    <mat-paginator
+      *ngIf="totalElements > pageSize"
+      [length]="totalElements"
+      [pageSize]="pageSize"
+      (page)="onPage($event)"
+      showFirstLastButtons>
+    </mat-paginator>
+
+  </main>
+</div>

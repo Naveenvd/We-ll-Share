@@ -1,0 +1,109 @@
+.role-wrapper {
+  min-height: 100vh;
+  background: var(--rm-bg);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 32px 16px 48px;
+}
+
+/* ── Header ─────────────────────────────────────────────────── */
+.role-header {
+  text-align: center;
+  margin-bottom: 36px;
+  max-width: 560px;
+
+  h1 { font-size: 28px; font-weight: 800; color: var(--rm-primary-dark); margin: 16px 0 8px; }
+  p  { font-size: 15px; color: var(--rm-text-muted); line-height: 1.6; margin: 0; }
+}
+
+.brand-row {
+  display: flex; align-items: center; justify-content: center; gap: 10px;
+  font-size: 22px; font-weight: 800; color: var(--rm-primary-dark);
+}
+
+.brand-icon { font-size: 32px; width: 32px; height: 32px; color: var(--rm-primary); }
+
+/* ── Cards ──────────────────────────────────────────────────── */
+.role-cards {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+  max-width: 720px;
+  width: 100%;
+
+  @media (max-width: 640px) { grid-template-columns: 1fr; }
+}
+
+.role-card {
+  background: var(--rm-surface);
+  border-radius: var(--rm-radius-lg);
+  border: 2px solid var(--rm-border);
+  padding: 32px 28px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  cursor: pointer;
+  transition: transform .2s, box-shadow .2s, border-color .2s;
+
+  &:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--rm-shadow-lg);
+  }
+
+  h2 { font-size: 22px; font-weight: 800; margin: 16px 0 6px; }
+  .role-tagline { font-size: 14px; color: var(--rm-text-muted); margin: 0 0 20px; }
+
+  &--rider {
+    &:hover { border-color: #16a34a; }
+    h2 { color: #14532d; }
+  }
+
+  &--driver {
+    &:hover { border-color: var(--rm-primary); }
+    h2 { color: var(--rm-primary-dark); }
+  }
+}
+
+/* ── Icon circle ────────────────────────────────────────────── */
+.role-icon-wrap {
+  width: 80px; height: 80px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  mat-icon { font-size: 40px; width: 40px; height: 40px; }
+
+  &--rider  { background: #dcfce7; mat-icon { color: #16a34a; } }
+  &--driver { background: #e8eaf6; mat-icon { color: var(--rm-primary); } }
+}
+
+/* ── Feature list ───────────────────────────────────────────── */
+.role-features {
+  list-style: none; padding: 0; margin: 0 0 24px;
+  width: 100%; text-align: left;
+  display: flex; flex-direction: column; gap: 10px;
+
+  li {
+    display: flex; align-items: center; gap: 10px;
+    font-size: 14px; color: var(--rm-text);
+    mat-icon { font-size: 18px; width: 18px; height: 18px; color: #16a34a; flex-shrink: 0; }
+  }
+}
+
+/* ── CTA buttons ────────────────────────────────────────────── */
+.role-btn {
+  width: 100%; height: 48px; font-size: 15px; font-weight: 600;
+  border-radius: var(--rm-radius-sm) !important;
+  display: flex; align-items: center; justify-content: center; gap: 8px;
+
+  &--rider  { background: #16a34a !important; color: #fff !important; }
+  &--driver { background: var(--rm-primary) !important; color: #fff !important; }
+}
+
+/* ── Footer note ────────────────────────────────────────────── */
+.role-footer {
+  margin-top: 28px;
+  font-size: 13px;
+  color: var(--rm-text-muted);
+  text-align: center;
+}

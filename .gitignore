@@ -1,0 +1,104 @@
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+#  We'll Share — Monorepo .gitignore
+#  Covers: Angular Frontend + Spring Boot Backend
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+# ── Claude AI session files ───────────────────────────────
+.claude/
+
+# ════════════════════════════════════════════════════════
+#  BACKEND  (Spring Boot / Maven)
+# ════════════════════════════════════════════════════════
+
+# Maven build output — never commit compiled bytecode
+ridemate-backend/target/
+
+# ⚠️  SECRETS — application.properties has DB password,
+#     JWT secret, email credentials. DO NOT commit.
+ridemate-backend/src/main/resources/application.properties
+ridemate-backend/src/main/resources/application-prod.properties
+ridemate-backend/src/main/resources/application-dev.properties
+
+# User uploaded files (runtime data, not source code)
+ridemate-backend/uploads/
+
+# IntelliJ IDEA project files
+ridemate-backend/.idea/
+ridemate-backend/*.iml
+ridemate-backend/*.iws
+ridemate-backend/*.ipr
+ridemate-backend/.mvn/wrapper/maven-wrapper.jar
+
+# Maven wrapper (optional — keep if your team uses it)
+# ridemate-backend/.mvn/
+
+# ════════════════════════════════════════════════════════
+#  FRONTEND  (Angular / Node)
+# ════════════════════════════════════════════════════════
+
+# Dependencies — run npm install after cloning
+ridemate-frontend/node_modules/
+
+# Angular build output
+ridemate-frontend/dist/
+ridemate-frontend/tmp/
+ridemate-frontend/out-tsc/
+ridemate-frontend/bazel-out/
+
+# Angular CLI cache
+ridemate-frontend/.angular/
+
+# Angular prod environment (has production API URL)
+ridemate-frontend/src/environments/environment.prod.ts
+ridemate-frontend/src/environments/environment.development.ts
+
+# Testing & coverage
+ridemate-frontend/coverage/
+
+# ════════════════════════════════════════════════════════
+#  COMMON
+# ════════════════════════════════════════════════════════
+
+# Environment / secret files
+.env
+.env.*
+*.env
+*.local
+secrets.properties
+
+# IDE & Editor
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+*.sublime-workspace
+.history/
+.settings/
+.project
+.classpath
+
+# OS generated files
+.DS_Store
+.DS_Store?
+Thumbs.db
+desktop.ini
+ehthumbs.db
+
+# Logs
+*.log
+logs/
+npm-debug.log
+yarn-error.log
+
+# Archives
+*.zip
+*.tar.gz
+*.jar
+!ridemate-backend/target/*.jar

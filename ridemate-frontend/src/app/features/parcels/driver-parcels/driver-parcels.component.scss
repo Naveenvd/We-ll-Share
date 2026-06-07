@@ -1,0 +1,123 @@
+.page-wrapper { max-width: 760px; margin: 0 auto; padding: 24px 16px 80px; }
+
+.page-header {
+  display: flex; align-items: center; gap: 8px; margin-bottom: 20px;
+  h2 { margin: 0; font-size: 22px; color: var(--rm-primary-dark); }
+}
+
+.center-spinner { display: flex; justify-content: center; padding: 60px; }
+.tab-content { padding: 16px 0; }
+
+.empty-state {
+  text-align: center; padding: 48px 0; color: #bbb;
+  mat-icon { font-size: 40px; width: 40px; height: 40px; display: block; margin: 0 auto 12px; }
+}
+
+.parcel-card {
+  border-radius: var(--rm-radius-md) !important; margin-bottom: 12px;
+  mat-card-content { padding: 16px 20px !important; }
+  &--muted { opacity: .75; }
+}
+
+.card-top-row { display: flex; align-items: center; gap: 8px; margin-bottom: 10px; }
+
+.status-badge {
+  padding: 3px 12px; border-radius: 100px; font-size: 12px; font-weight: 600;
+  &--pending          { background: #fffbeb; color: #92400e; }
+  &--accepted         { background: #eff6ff; color: #1d4ed8; }
+  &--in-transit       { background: #dcfce7; color: #166534; }
+  &--delivered        { background: #f3e8ff; color: #6b21a8; }
+  &--rejected         { background: #fee2e2; color: #991b1b; }
+  &--cancelled        { background: #f3f4f6; color: #6b7280; }
+  &--complaint-raised { background: #fff7ed; color: #c2410c; }
+}
+
+.size-tag {
+  margin-left: auto; background: #e8eaf6; color: var(--rm-primary-dark);
+  font-size: 11px; padding: 2px 8px; border-radius: 100px; font-weight: 600;
+}
+
+.sender-row {
+  display: flex; align-items: center; gap: 12px; margin-bottom: 10px;
+  strong { font-size: 15px; display: block; }
+}
+
+.avatar {
+  width: 40px; height: 40px; border-radius: 50%; object-fit: cover;
+  border: 2px solid var(--rm-border);
+  &--placeholder {
+    background: #e8eaf6; display: flex; align-items: center; justify-content: center;
+    mat-icon { color: var(--rm-primary-dark); font-size: 20px; }
+  }
+}
+
+.description { font-size: 13px; color: var(--rm-text); margin-bottom: 8px; }
+.route-line  { font-size: 13px; color: var(--rm-text-muted); margin-bottom: 8px; }
+.meta        { font-size: 12px; color: var(--rm-text-muted); }
+
+.parcel-img-row { margin-bottom: 10px; }
+.parcel-thumb {
+  max-width: 140px; max-height: 100px; border-radius: var(--rm-radius-sm);
+  object-fit: cover; border: 1px solid var(--rm-border);
+}
+
+.photo-upload-section {
+  margin-bottom: 12px;
+  .upload-label {
+    display: inline-flex; align-items: center; gap: 8px; cursor: pointer;
+    background: #e8eaf6; border-radius: var(--rm-radius-sm); padding: 8px 14px;
+    font-size: 13px; color: var(--rm-primary-dark); font-weight: 500;
+    mat-icon { font-size: 18px; }
+    &:hover { background: #c5cae9; }
+  }
+}
+
+.otp-entry {
+  display: flex; align-items: center; gap: 12px; margin-bottom: 10px;
+  .otp-field { width: 160px; }
+}
+
+.proof-photo-row {
+  display: flex; align-items: center; gap: 10px; margin-bottom: 10px;
+  .proof-label { font-size: 12px; color: var(--rm-text-muted); }
+}
+
+.proof-photos-row {
+  display: flex; align-items: center; gap: 10px; margin-top: 8px;
+  mat-icon { color: #bbb; }
+}
+
+.proof-thumb {
+  width: 80px; height: 60px; border-radius: 6px;
+  object-fit: cover; border: 1px solid var(--rm-border);
+}
+
+.card-actions { display: flex; gap: 10px; flex-wrap: wrap; }
+
+/* ── Dark mode overrides ─────────────────────────────────────────── */
+:host-context([data-theme="dark"]) {
+  .status-badge {
+    &--pending          { background: rgba(245,158,11,.15);  color: #fcd34d; }
+    &--accepted         { background: rgba(37,99,235,.15);   color: #93c5fd; }
+    &--in-transit       { background: rgba(22,163,74,.15);   color: #86efac; }
+    &--delivered        { background: rgba(124,58,237,.15);  color: #c4b5fd; }
+    &--rejected         { background: rgba(220,38,38,.15);   color: #fca5a5; }
+    &--cancelled        { background: rgba(107,114,128,.12); color: #d1d5db; }
+    &--complaint-raised { background: rgba(194,65,12,.15);   color: #fdba74; }
+  }
+
+  .size-tag {
+    background: rgba(124,58,237,.15);
+    color: var(--rm-primary-light);
+  }
+
+  .avatar--placeholder {
+    background: rgba(124,58,237,.15);
+  }
+
+  .photo-upload-section .upload-label {
+    background: rgba(124,58,237,.15);
+    color: var(--rm-primary-light);
+    &:hover { background: rgba(124,58,237,.25); }
+  }
+}

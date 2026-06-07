@@ -1,0 +1,187 @@
+/* ── Theme Picker ───────────────────────────────────────────────── */
+
+.tp-root {
+  position: fixed;
+  bottom: 24px;
+  left:   24px;
+  z-index: 1100;
+  display: flex;
+  flex-direction: column-reverse;   /* panel opens upward */
+  align-items: flex-start;
+  gap: 10px;
+}
+
+/* ── FAB button ─────────────────────────────────────────────────── */
+.tp-fab {
+  width:  48px;
+  height: 48px;
+  border-radius: 50%;
+  border: none;
+  background: var(--rm-primary);
+  color: #fff;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 14px rgba(0,0,0,.25);
+  transition: background .2s, transform .2s, box-shadow .2s;
+
+  mat-icon {
+    font-size: 22px;
+    width: 22px;
+    height: 22px;
+    transition: transform .25s ease;
+  }
+
+  &:hover {
+    background: var(--rm-primary-dark);
+    box-shadow: 0 6px 20px rgba(0,0,0,.3);
+    transform: scale(1.05);
+  }
+
+  &--open {
+    background: var(--rm-primary-dark);
+    mat-icon { transform: rotate(90deg); }
+  }
+
+  &:focus { outline: 2px solid var(--rm-primary-light); outline-offset: 2px; }
+}
+
+/* ── Panel ──────────────────────────────────────────────────────── */
+.tp-panel {
+  background: var(--rm-surface);
+  border: 1px solid var(--rm-border);
+  border-radius: 14px;
+  padding: 16px;
+  box-shadow: 0 8px 30px rgba(0,0,0,.18);
+  min-width: 188px;
+  animation: tpSlide .18s ease-out;
+}
+
+@keyframes tpSlide {
+  from { opacity: 0; transform: translateY(10px) scale(.96); }
+  to   { opacity: 1; transform: translateY(0)    scale(1);   }
+}
+
+.tp-title {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: .8px;
+  color: var(--rm-text-muted);
+  margin: 0 0 12px;
+}
+
+/* ── Section ────────────────────────────────────────────────────── */
+.tp-section {
+  &:not(:last-child) { margin-bottom: 14px; }
+}
+
+.tp-section-label {
+  display: block;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--rm-text-muted);
+  margin-bottom: 8px;
+  text-transform: uppercase;
+  letter-spacing: .5px;
+}
+
+/* ── Mode toggle row ────────────────────────────────────────────── */
+.tp-mode-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.mode-icon {
+  font-size: 18px;
+  width: 18px;
+  height: 18px;
+  color: var(--rm-text-muted);
+  transition: color .2s;
+
+  &.active { color: var(--rm-primary); }
+}
+
+/* Custom toggle switch */
+.tp-toggle {
+  position: relative;
+  width:  44px;
+  height: 24px;
+  border-radius: 12px;
+  background: #e0e0e0;
+  border: none;
+  cursor: pointer;
+  transition: background .2s;
+  padding: 0;
+  flex-shrink: 0;
+
+  &--dark {
+    background: var(--rm-primary);
+  }
+
+  &:focus { outline: 2px solid var(--rm-primary-light); outline-offset: 2px; }
+}
+
+.tp-thumb {
+  position: absolute;
+  top:  3px;
+  left: 3px;
+  width:  18px;
+  height: 18px;
+  border-radius: 50%;
+  background: #fff;
+  transition: left .2s ease;
+  box-shadow: 0 1px 4px rgba(0,0,0,.25);
+
+  .tp-toggle--dark & {
+    left: 23px;
+  }
+}
+
+/* ── Colour swatches ────────────────────────────────────────────── */
+.tp-swatches {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.tp-swatch {
+  width:  30px;
+  height: 30px;
+  border-radius: 50%;
+  border: 2.5px solid transparent;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform .15s, border-color .15s;
+  padding: 0;
+
+  &:hover { transform: scale(1.15); }
+
+  &--active {
+    border-color: #fff;
+    box-shadow: 0 0 0 2px var(--rm-primary), 0 2px 8px rgba(0,0,0,.2);
+  }
+
+  &:focus { outline: 2px solid var(--rm-primary-light); outline-offset: 2px; }
+}
+
+.swatch-check {
+  font-size: 14px;
+  width: 14px;
+  height: 14px;
+  color: #fff;
+  text-shadow: 0 1px 2px rgba(0,0,0,.3);
+}
+
+/* ── Dark-mode panel adaptation ─────────────────────────────────── */
+:host-context([data-theme="dark"]) {
+  .tp-toggle { background: #3a3855; }
+
+  .tp-swatch--active {
+    border-color: var(--rm-surface);
+  }
+}

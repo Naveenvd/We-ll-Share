@@ -1,0 +1,109 @@
+<div class="track-wrapper">
+
+  <!-- Loading -->
+  <div *ngIf="loading" class="center-spinner">
+    <mat-spinner diameter="56"></mat-spinner>
+    <p>Loading trip info…</p>
+  </div>
+
+  <!-- Error -->
+  <div *ngIf="error" class="error-state">
+    <mat-icon>link_off</mat-icon>
+    <h3>Tracking link not found</h3>
+    <p>This link may have expired or is invalid.</p>
+  </div>
+
+  <!-- Trip info -->
+  <ng-container *ngIf="!loading && !error && booking">
+
+    <!-- Brand header -->
+    <header class="track-header">
+      <mat-icon>directions_car</mat-icon>
+      <span>We'll Share — Live Trip Tracking</span>
+    </header>
+
+    <!-- Status banner -->
+    <div class="status-banner status-banner--{{ booking.status.toLowerCase() }}">
+      <mat-icon>{{ booking.status === 'STARTED' ? 'play_circle' :
+                  booking.status === 'COMPLETED' ? 'check_circle' : 'schedule' }}</mat-icon>
+      <span>{{ statusLabel(booking.status) }}</span>
+    </div>
+
+    <!-- Route map -->
+    <div class="map-container">
+      <div #mapEl class="track-map"></div>
+    </div>
+
+    <!-- Trip summary card -->
+    <mat-card class="info-card">
+      <mat-card-content>
+
+        <div class="route-row">
+          <div class="route-point">
+            <span class="dot dot--from"></span>
+            <div>
+              <div class="point-label">From</div>
+              <div class="point-name">{{ booking.ride.fromLocation }}</div>
+            </div>
+          </div>
+          <div class="route-line-divider"></div>
+          <div class="route-point">
+            <span class="dot dot--to"></span>
+            <div>
+              <div class="point-label">To</div>
+              <div class="point-name">{{ booking.ride.toLocation }}</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="meta-row">
+          <mat-icon>schedule</mat-icon>
+          <span>{{ booking.ride.departureTime | date:'EEEE, d MMM yyyy · h:mm a' }}</span>
+        </div>
+
+      </mat-card-content>
+    </mat-card>
+
+    <!-- People card -->
+    <mat-card class="info-card">
+      <mat-card-content>
+        <div class="people-row">
+          <!-- Driver -->
+          <div class="person-block">
+            <img *ngIf="booking.ride.driver.photoUrl"
+                 [src]="booking.ride.driver.photoUrl"
+                 class="avatar" alt="Driver" />
+            <div *ngIf="!booking.ride.driver.photoUrl"
+                 class="avatar avatar--placeholder">
+              <mat-icon>person</mat-icon>
+            </div>
+            <div>
+              <div class="person-role">Driver</div>
+              <div class="person-name">{{ booking.ride.driver.name }}</div>
+            </div>
+          </div>
+
+          <mat-icon class="vs-icon">swap_horiz</mat-icon>
+
+          <!-- Passenger -->
+          <div class="person-block">
+            <img *ngIf="booking.passenger.photoUrl"
+                 [src]="booking.passenger.photoUrl"
+                 class="avatar" alt="Passenger" />
+            <div *ngIf="!booking.passenger.photoUrl"
+                 class="avatar avatar--placeholder">
+              <mat-icon>person</mat-icon>
+            </div>
+            <div>
+              <div class="person-role">Passenger</div>
+              <div class="person-name">{{ booking.passenger.name }}</div>
+            </div>
+          </div>
+        </div>
+      </mat-card-content>
+    </mat-card>
+
+    <p class="brand-footer">Powered by We'll Share · Carpool Platform</p>
+
+  </ng-container>
+</div>

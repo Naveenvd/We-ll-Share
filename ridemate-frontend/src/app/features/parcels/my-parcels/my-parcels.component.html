@@ -1,0 +1,79 @@
+<div class="page-wrapper">
+
+  <div class="page-header">
+    <a mat-icon-button routerLink="/dashboard"><mat-icon>arrow_back</mat-icon></a>
+    <h2>My Parcels</h2>
+    <a mat-flat-button color="primary" routerLink="/parcels/post" class="new-btn">
+      <mat-icon>add</mat-icon> Send Parcel
+    </a>
+  </div>
+
+  <div *ngIf="loading" class="center-spinner">
+    <mat-spinner diameter="48"></mat-spinner>
+  </div>
+
+  <div *ngIf="!loading && parcels.length === 0" class="empty-state">
+    <mat-icon>inventory_2</mat-icon>
+    <p>No parcels yet. <a routerLink="/parcels/post">Send your first parcel</a></p>
+  </div>
+
+  <mat-card *ngFor="let p of parcels" class="parcel-card">
+    <mat-card-content>
+
+      <div class="card-top-row">
+        <span class="status-badge status-badge--{{ p.status.toLowerCase().replace('_','-') }}">
+          {{ statusLabel(p.status) }}
+        </span>
+        <span *ngIf="p.unreadMessages > 0" class="unread-badge">{{ p.unreadMessages }} new</span>
+        <span class="size-tag">{{ p.size }}</span>
+      </div>
+
+      <div class="route-row">
+        <span class="loc from">{{ p.fromLocation }}</span>
+        <mat-icon class="arrow-icon">arrow_forward</mat-icon>
+        <span class="loc to">{{ p.toLocation }}</span>
+      </div>
+
+      <div class="meta-row">
+        <span><mat-icon class="meta-icon">directions_car</mat-icon>{{ p.ride.driver.name }}</span>
+        <span><mat-icon class="meta-icon">event</mat-icon>
+          {{ p.ride.departureTime | date:'d MMM, h:mm a' }}</span>
+        <span class="price">₹{{ p.price }}</span>
+      </div>
+
+      <!-- OTP chips -->
+      <div *ngIf="p.pickupOtp" class="otp-row">
+        <mat-icon class="otp-icon">pin</mat-icon>
+        <div>
+          <div class="otp-label">Pickup OTP</div>
+          <div class="otp-code">{{ p.pickupOtp }}</div>
+        </div>
+        <span *ngIf="p.pickupOtpVerified" class="verified-badge">✓ Verified</span>
+      </div>
+
+      <div *ngIf="p.deliveryOtp" class="otp-row otp-row--delivery">
+        <mat-icon class="otp-icon">local_shipping</mat-icon>
+        <div>
+          <div class="otp-label">Delivery OTP</div>
+          <div class="otp-code">{{ p.deliveryOtp }}</div>
+        </div>
+        <span *ngIf="p.deliveryOtpVerified" class="verified-badge">✓ Delivered</span>
+      </div>
+
+      <div class="card-actions">
+        <a mat-stroked-button color="primary" [routerLink]="['/parcels', p.id]">
+          <mat-icon>info_outline</mat-icon> Details &amp; Chat
+        </a>
+        <button mat-stroked-button color="warn"
+                *ngIf="canCancel(p)"
+                [disabled]="cancelling === p.id"
+                (click)="cancel(p.id)">
+          <mat-icon>cancel</mat-icon>
+          {{ cancelling === p.id ? 'Cancelling…' : 'Cancel' }}
+        </button>
+      </div>
+
+    </mat-card-content>
+  </mat-card>
+
+</div>

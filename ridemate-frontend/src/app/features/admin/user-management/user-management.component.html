@@ -1,0 +1,161 @@
+<!-- Admin User Management -->
+<div class="admin-layout" [class.sidebar-open]="isMobileMenuOpen">
+
+  <!-- Mobile overlay -->
+  <div class="admin-overlay" (click)="closeMobileMenu()"></div>
+
+  <!-- ── Sidebar ──────────────────────────────────────────────── -->
+  <nav class="admin-sidebar">
+    <button class="sidebar-close-btn" (click)="closeMobileMenu()">
+      <mat-icon>close</mat-icon>
+    </button>
+
+    <div class="sidebar-brand">
+      <div class="brand-icon-wrap">
+        <mat-icon>admin_panel_settings</mat-icon>
+      </div>
+      <div class="brand-text">
+        <span class="brand-name">We'll Share</span>
+        <span class="brand-sub">Admin Console</span>
+      </div>
+    </div>
+
+    <nav class="sidebar-nav">
+      <a routerLink="/admin/dashboard" class="nav-item"
+         routerLinkActive="nav-item--active"
+         [routerLinkActiveOptions]="{exact:true}"
+         (click)="closeMobileMenu()">
+        <span class="nav-icon"><mat-icon>dashboard</mat-icon></span>
+        <span>Dashboard</span>
+      </a>
+      <a routerLink="/admin/verifications" class="nav-item"
+         routerLinkActive="nav-item--active"
+         (click)="closeMobileMenu()">
+        <span class="nav-icon"><mat-icon>verified_user</mat-icon></span>
+        <span>Verifications</span>
+      </a>
+      <a routerLink="/admin/users" class="nav-item"
+         routerLinkActive="nav-item--active"
+         (click)="closeMobileMenu()">
+        <span class="nav-icon"><mat-icon>group</mat-icon></span>
+        <span>Users</span>
+      </a>
+    </nav>
+
+    <div class="sidebar-footer">
+      <button class="nav-item nav-item--logout" (click)="logout()">
+        <span class="nav-icon"><mat-icon>logout</mat-icon></span>
+        <span>Logout</span>
+      </button>
+    </div>
+  </nav>
+
+  <!-- ── Main ─────────────────────────────────────────────────── -->
+  <main class="admin-main">
+
+    <!-- Topbar -->
+    <header class="admin-topbar">
+      <button class="hamburger-btn" (click)="toggleMobileMenu()">
+        <mat-icon>menu</mat-icon>
+      </button>
+      <div class="topbar-title">
+        <h2>User Management</h2>
+        <p>Search, suspend, and manage all registered users</p>
+      </div>
+      <div class="topbar-actions">
+        <div class="admin-avatar">
+          <mat-icon>admin_panel_settings</mat-icon>
+        </div>
+      </div>
+    </header>
+
+    <!-- ── Content ── -->
+
+    <!-- Search bar -->
+    <mat-form-field appearance="outline" class="search-field">
+      <mat-label>Search by name or email</mat-label>
+      <input matInput [formControl]="searchCtrl" />
+      <mat-icon matSuffix>search</mat-icon>
+    </mat-form-field>
+
+    <div *ngIf="loading" class="center-spinner">
+      <mat-spinner diameter="40"></mat-spinner>
+    </div>
+
+    <!-- Table -->
+    <mat-card *ngIf="!loading" class="table-card">
+      <table mat-table [dataSource]="users" class="users-table">
+
+        <!-- Name -->
+        <ng-container matColumnDef="name">
+          <th mat-header-cell *matHeaderCellDef>Name</th>
+          <td mat-cell *matCellDef="let u">
+            <div class="name-cell">
+              <img *ngIf="u.photoUrl" [src]="u.photoUrl" class="mini-thumb" alt="photo" />
+              <span>{{ u.name }}</span>
+            </div>
+          </td>
+        </ng-container>
+
+        <!-- Email -->
+        <ng-container matColumnDef="email">
+          <th mat-header-cell *matHeaderCellDef>Email</th>
+          <td mat-cell *matCellDef="let u">{{ u.email }}</td>
+        </ng-container>
+
+        <!-- Phone -->
+        <ng-container matColumnDef="phone">
+          <th mat-header-cell *matHeaderCellDef>Phone</th>
+          <td mat-cell *matCellDef="let u">{{ u.phone }}</td>
+        </ng-container>
+
+        <!-- Status -->
+        <ng-container matColumnDef="status">
+          <th mat-header-cell *matHeaderCellDef>Status</th>
+          <td mat-cell *matCellDef="let u">
+            <span class="status-badge" [ngClass]="'status-badge--' + u.status.toLowerCase()">
+              {{ u.status | titlecase }}
+            </span>
+          </td>
+        </ng-container>
+
+        <!-- Joined -->
+        <ng-container matColumnDef="joined">
+          <th mat-header-cell *matHeaderCellDef>Joined</th>
+          <td mat-cell *matCellDef="let u">{{ u.createdAt | date:'mediumDate' }}</td>
+        </ng-container>
+
+        <!-- Actions -->
+        <ng-container matColumnDef="actions">
+          <th mat-header-cell *matHeaderCellDef>Actions</th>
+          <td mat-cell *matCellDef="let u">
+            <button *ngIf="u.status !== 'SUSPENDED'"
+                    mat-icon-button color="warn"
+                    matTooltip="Suspend user"
+                    (click)="suspend(u)">
+              <mat-icon>block</mat-icon>
+            </button>
+            <button *ngIf="u.status === 'SUSPENDED'"
+                    mat-icon-button color="primary"
+                    matTooltip="Unblock user"
+                    (click)="unblock(u)">
+              <mat-icon>lock_open</mat-icon>
+            </button>
+          </td>
+        </ng-container>
+
+        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+      </table>
+    </mat-card>
+
+    <!-- Paginator -->
+    <mat-paginator
+      [length]="totalElements"
+      [pageSize]="pageSize"
+      (page)="onPage($event)"
+      showFirstLastButtons>
+    </mat-paginator>
+
+  </main>
+</div>

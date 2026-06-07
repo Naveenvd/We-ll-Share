@@ -1,0 +1,99 @@
+<div class="page-wrapper">
+
+  <div class="page-header">
+    <a mat-icon-button routerLink="/dashboard"><mat-icon>arrow_back</mat-icon></a>
+    <h2>My Bookings</h2>
+  </div>
+
+  <!-- Loading -->
+  <div *ngIf="loading" class="center-spinner">
+    <mat-spinner diameter="48"></mat-spinner>
+  </div>
+
+  <!-- Empty state -->
+  <div *ngIf="!loading && bookings.length === 0" class="empty-state">
+    <div class="empty-icon"><mat-icon>confirmation_number</mat-icon></div>
+    <h3>No bookings yet</h3>
+    <p>Find a ride that matches your route and book your first seat.</p>
+    <a routerLink="/rides/search" class="find-ride-btn">
+      <mat-icon>search</mat-icon> Find a Ride
+    </a>
+  </div>
+
+  <!-- Booking cards -->
+  <mat-card
+    *ngFor="let b of bookings"
+    class="booking-card"
+    [ngClass]="'status-' + b.status.toLowerCase()">
+    <mat-card-content>
+
+      <!-- Status + unread -->
+      <div class="card-top-row">
+        <span class="status-badge status-badge--{{ b.status.toLowerCase() }}">
+          {{ statusLabel(b.status) }}
+        </span>
+        <span *ngIf="b.unreadMessages > 0" class="unread-badge">
+          {{ b.unreadMessages }} new
+        </span>
+      </div>
+
+      <!-- Route (vertical timeline) -->
+      <div class="route-block">
+        <div class="route-dots">
+          <span class="dot-from"></span>
+          <span class="dot-line"></span>
+          <span class="dot-to"></span>
+        </div>
+        <div class="route-labels">
+          <span class="route-loc">{{ b.ride.fromLocation }}</span>
+          <span class="route-loc">{{ b.ride.toLocation }}</span>
+        </div>
+      </div>
+
+      <!-- Meta -->
+      <div class="meta-row">
+        <span class="meta-item">
+          <mat-icon>event</mat-icon>
+          {{ b.ride.departureTime | date:'EEE, d MMM · h:mm a' }}
+        </span>
+        <span class="meta-item">
+          <mat-icon>airline_seat_recline_normal</mat-icon>
+          {{ b.seatsBooked }} seat(s)
+        </span>
+        <span class="meta-amount">₹{{ b.amount }}</span>
+      </div>
+
+      <!-- OTP chip (shown after ride STARTED) -->
+      <div *ngIf="b.tripOtp" class="otp-row">
+        <mat-icon class="otp-icon">pin</mat-icon>
+        <div class="otp-info">
+          <span class="otp-label">Your Trip OTP</span>
+          <span class="otp-code">{{ b.tripOtp }}</span>
+        </div>
+        <span *ngIf="b.otpVerified" class="verified-badge">
+          <mat-icon>check_circle</mat-icon> Verified
+        </span>
+      </div>
+
+      <!-- Actions -->
+      <div class="card-actions">
+        <a class="action-primary" [routerLink]="['/bookings', b.id]">
+          <mat-icon>chat_bubble_outline</mat-icon> Details &amp; Chat
+        </a>
+        <button class="action-cancel"
+                *ngIf="canCancel(b)"
+                [disabled]="cancelling === b.id"
+                (click)="cancel(b.id)">
+          <mat-icon>cancel</mat-icon>
+          {{ cancelling === b.id ? 'Cancelling…' : 'Cancel' }}
+        </button>
+        <a *ngIf="b.tripShareToken" class="action-share"
+           [href]="'/track/' + b.tripShareToken" target="_blank" title="Share live tracking">
+          <mat-icon>share</mat-icon>
+        </a>
+      </div>
+
+    </mat-card-content>
+  </mat-card>
+
+</div>

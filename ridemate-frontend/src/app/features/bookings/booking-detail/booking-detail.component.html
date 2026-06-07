@@ -1,0 +1,178 @@
+<div class="page-wrapper">
+
+  <!-- Header -->
+  <div class="page-header">
+    <a mat-icon-button onclick="history.back()"><mat-icon>arrow_back</mat-icon></a>
+    <h2>Booking #{{ bookingId }}</h2>
+    <span *ngIf="booking"
+          class="status-badge status-badge--{{ booking.status.toLowerCase() }}">
+      {{ statusLabel(booking.status) }}
+    </span>
+  </div>
+
+  <!-- Spinner -->
+  <div *ngIf="loading" class="center-spinner">
+    <mat-spinner diameter="48"></mat-spinner>
+  </div>
+
+  <ng-container *ngIf="!loading && booking">
+
+    <!-- ── Booking summary card ── -->
+    <mat-card class="section-card">
+      <mat-card-content>
+        <div class="section-title">Ride Info</div>
+
+        <div class="route-row">
+          <span class="loc from">{{ booking.ride.fromLocation }}</span>
+          <mat-icon class="arrow-icon">arrow_forward</mat-icon>
+          <span class="loc to">{{ booking.ride.toLocation }}</span>
+        </div>
+
+        <div class="meta-grid">
+          <div class="meta-item">
+            <mat-icon>event</mat-icon>
+            <div>
+              <div class="meta-label">Date &amp; Time</div>
+              {{ booking.ride.departureTime | date:'EEEE, d MMM yyyy, h:mm a' }}
+            </div>
+          </div>
+          <div class="meta-item">
+            <mat-icon>airline_seat_recline_normal</mat-icon>
+            <div>
+              <div class="meta-label">Seats Booked</div>
+              {{ booking.seatsBooked }}
+            </div>
+          </div>
+          <div class="meta-item">
+            <mat-icon>currency_rupee</mat-icon>
+            <div>
+              <div class="meta-label">Amount</div>
+              <span class="amount">₹{{ booking.amount }}</span>
+            </div>
+          </div>
+          <div class="meta-item" *ngIf="booking.tripShareToken">
+            <mat-icon>share</mat-icon>
+            <div>
+              <div class="meta-label">Live Tracking</div>
+              <a [href]="'/track/' + booking.tripShareToken" target="_blank">
+                Share Link
+              </a>
+            </div>
+          </div>
+        </div>
+
+        <!-- ── Payment placeholder ── -->
+        <div class="payment-placeholder">
+          <mat-icon>payment</mat-icon>
+          <div>
+            <div class="pay-label">Payment</div>
+            <div class="pay-status">Cash on Ride</div>
+            <div class="pay-note">Online payment integration coming soon</div>
+          </div>
+        </div>
+
+      </mat-card-content>
+    </mat-card>
+
+    <!-- ── Passenger card ── -->
+    <mat-card class="section-card">
+      <mat-card-content>
+        <div class="section-title">
+          {{ isDriver() ? 'Passenger' : 'Your Booking' }}
+        </div>
+        <div class="person-row">
+          <img *ngIf="booking.passenger.photoUrl" [src]="booking.passenger.photoUrl"
+               class="avatar" alt="Passenger photo" />
+          <div *ngIf="!booking.passenger.photoUrl" class="avatar avatar--placeholder">
+            <mat-icon>person</mat-icon>
+          </div>
+          <div>
+            <strong>{{ booking.passenger.name }}</strong>
+            <div class="person-meta">
+              <span class="gender-tag">{{ booking.passenger.gender }}</span>
+              <span class="rating-row">
+                <mat-icon class="star-icon">star</mat-icon>
+                {{ booking.passenger.avgRating | number:'1.1-1' }}
+              </span>
+            </div>
+          </div>
+        </div>
+      </mat-card-content>
+    </mat-card>
+
+    <!-- ── Safety + Review actions ── -->
+    <div class="safety-actions"
+         *ngIf="booking.status === 'COMPLETED' || booking.status === 'CANCELLED'">
+      <!-- Review only for COMPLETED -->
+      <button mat-flat-button color="primary"
+              *ngIf="booking.status === 'COMPLETED'"
+              (click)="openReviewDialog()">
+        <mat-icon>star</mat-icon>
+        Rate {{ isDriver() ? 'Passenger' : 'Driver' }}
+      </button>
+      <button mat-stroked-button color="warn" (click)="openReportDialog()">
+        <mat-icon>flag</mat-icon>
+        Report {{ isDriver() ? 'Passenger' : 'Driver' }}
+      </button>
+    </div>
+
+    <!-- ── Trip OTP card (passenger view, ride STARTED) ── -->
+    <mat-card *ngIf="booking.tripOtp" class="section-card otp-card">
+      <mat-card-content>
+        <div class="section-title">Your Trip OTP</div>
+        <div class="otp-display">{{ booking.tripOtp }}</div>
+        <div class="otp-hint">
+          Show this code to the driver when you board the vehicle.
+        </div>
+        <div *ngIf="booking.otpVerified" class="verified-row">
+          <mat-icon>check_circle</mat-icon> OTP Verified — You're boarded!
+        </div>
+      </mat-card-content>
+    </mat-card>
+
+  </ng-container>
+
+  <!-- ── Chat panel ── -->
+  <mat-card class="chat-card" *ngIf="!loading && booking">
+    <mat-card-content class="chat-content">
+
+      <div class="section-title chat-title">
+        <mat-icon>chat</mat-icon> Chat
+      </div>
+
+      <!-- Messages list -->
+      <div class="messages-list" #chatList>
+        <div *ngIf="messages.length === 0" class="no-messages">
+          No messages yet. Say hi!
+        </div>
+        <div *ngFor="let m of messages"
+             class="message-bubble"
+             [class.mine]="isMine(m)"
+             [class.theirs]="!isMine(m)">
+          <div class="bubble-sender">{{ isMine(m) ? 'You' : m.senderName }}</div>
+          <div class="bubble-text">{{ m.text }}</div>
+          <div class="bubble-time">{{ m.sentAt | date:'h:mm a' }}</div>
+        </div>
+        <div #messagesEnd></div>
+      </div>
+
+      <!-- Input row -->
+      <div class="chat-input-row">
+        <mat-form-field appearance="outline" class="chat-field">
+          <input matInput
+                 placeholder="Type a message…"
+                 [(ngModel)]="newText"
+                 (keydown)="onKeydown($event)"
+                 maxlength="500" />
+        </mat-form-field>
+        <button mat-icon-button color="primary"
+                [disabled]="!newText.trim() || sending"
+                (click)="send()">
+          <mat-icon>send</mat-icon>
+        </button>
+      </div>
+
+    </mat-card-content>
+  </mat-card>
+
+</div>

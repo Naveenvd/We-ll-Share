@@ -1,0 +1,38 @@
+@use '../admin-dashboard/admin-dashboard.component.scss';
+
+.search-field { width: 100%; max-width: 420px; margin-bottom: 20px; }
+
+.table-card {
+  border-radius: var(--rm-radius-md) !important;
+  overflow: hidden;
+  margin-bottom: 16px;
+}
+
+.users-table { width: 100%; }
+
+th { font-weight: 700; color: var(--rm-text-muted); font-size: 12px; text-transform: uppercase; }
+td { font-size: 13px; }
+
+.name-cell { display: flex; align-items: center; gap: 10px; }
+
+.mini-thumb { width: 32px; height: 32px; border-radius: 50%; object-fit: cover; }
+
+.status-badge {
+  display: inline-block; padding: 3px 10px; border-radius: 100px; font-size: 11px; font-weight: 600;
+  &--verified             { background: #dcfce7; color: #166534; }
+  &--pending_verification { background: #fef9c3; color: #854d0e; }
+  &--rejected             { background: #fee2e2; color: #991b1b; }
+  &--suspended            { background: #fce7f3; color: #9d174d; }
+}
+
+.center-spinner { display: flex; justify-content: center; padding: 40px; }
+
+/* ── Dark mode overrides ─────────────────────────────────────────── */
+:host-context([data-theme="dark"]) {
+  .status-badge {
+    &--verified             { background: rgba(22,163,74,.15);   color: #86efac; }
+    &--pending_verification { background: rgba(202,138,4,.15);   color: #fde047; }
+    &--rejected             { background: rgba(220,38,38,.15);   color: #fca5a5; }
+    &--suspended            { background: rgba(219,39,119,.15);  color: #f9a8d4; }
+  }
+}

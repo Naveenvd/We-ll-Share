@@ -1,0 +1,76 @@
+@use '../admin-dashboard/admin-dashboard.component.scss';
+
+.verify-card {
+  border-radius: var(--rm-radius-md) !important;
+  margin-bottom: 16px;
+  mat-card-content { padding: 20px !important; }
+}
+
+.card-header {
+  display: flex; justify-content: space-between; align-items: flex-start;
+  flex-wrap: wrap; gap: 12px; margin-bottom: 16px;
+}
+
+.user-info { display: flex; align-items: center; gap: 14px; }
+
+.thumb {
+  width: 56px; height: 56px; border-radius: 50%; object-fit: cover;
+  border: 2px solid var(--rm-border);
+  &--placeholder {
+    background: #e8eaf6; display: flex; align-items: center; justify-content: center;
+    mat-icon { font-size: 28px; color: var(--rm-primary-dark); }
+  }
+}
+
+.meta { font-size: 12px; color: var(--rm-text-muted); margin-top: 2px; }
+.action-btns { display: flex; gap: 8px; }
+
+.docs-row { display: flex; flex-wrap: wrap; gap: 24px; padding-top: 16px; }
+
+.doc-item {
+  display: flex; flex-direction: column; gap: 4px; font-size: 13px; color: var(--rm-text);
+  .doc-label { font-size: 11px; color: var(--rm-text-muted); text-transform: uppercase; letter-spacing: .5px; }
+}
+
+.view-link {
+  display: inline-flex; align-items: center; gap: 4px;
+  color: var(--rm-primary); text-decoration: none; font-size: 12px; margin-left: 6px;
+  &:hover { text-decoration: underline; }
+  mat-icon { font-size: 14px; width: 14px; height: 14px; }
+}
+
+.missing  { color: #dc2626; font-size: 12px; }
+.optional { color: var(--rm-text-muted); font-size: 12px; font-style: italic; }
+.ok-icon   { color: #16a34a; font-size: 20px; }
+.warn-icon { color: #f59e0b; font-size: 20px; }
+
+.empty-state {
+  display: flex; flex-direction: column; align-items: center;
+  padding: 56px 24px; text-align: center;
+
+  .empty-icon-wrap {
+    width: 72px; height: 72px; border-radius: 50%;
+    background: linear-gradient(135deg, #dcfce7, #bbf7d0);
+    display: flex; align-items: center; justify-content: center;
+    margin-bottom: 16px;
+    box-shadow: 0 4px 14px rgba(22,163,74,.2);
+    mat-icon { font-size: 36px; width: 36px; height: 36px; color: #16a34a; }
+  }
+
+  p { font-size: 15px; color: var(--rm-text-muted); margin: 0; font-weight: 500; }
+}
+
+.center-spinner { display: flex; justify-content: center; padding: 40px; }
+
+/* ── Dark mode overrides ─────────────────────────────────────────── */
+:host-context([data-theme="dark"]) {
+  .thumb--placeholder {
+    background: rgba(124,58,237,.15);
+    mat-icon { color: var(--rm-primary-light); }
+  }
+
+  .empty-state .empty-icon-wrap {
+    background: rgba(22,163,74,.15);
+    mat-icon { color: #4ade80; }
+  }
+}

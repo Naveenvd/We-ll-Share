@@ -1,0 +1,184 @@
+<!-- Signup — premium split-screen layout -->
+<div class="auth-container">
+
+  <!-- ── Left hero panel ─────────────────────────────────────────── -->
+  <div class="auth-hero">
+
+    <!-- Decorative concentric rings -->
+    <span class="hero-ring hero-ring--1"></span>
+    <span class="hero-ring hero-ring--2"></span>
+    <span class="hero-ring hero-ring--3"></span>
+
+    <div class="hero-icon">
+      <mat-icon>person_add</mat-icon>
+    </div>
+    <h1>Join We'll Share</h1>
+    <p>Create your free account and start sharing rides or sending parcels today.</p>
+
+    <ul class="hero-features">
+      <li><mat-icon>check_circle</mat-icon> Free to register</li>
+      <li><mat-icon>check_circle</mat-icon> Verified community members</li>
+      <li><mat-icon>check_circle</mat-icon> Save money on daily commutes</li>
+      <li><mat-icon>check_circle</mat-icon> Earn by sharing your ride</li>
+    </ul>
+
+    <!-- Floating stat chips -->
+    <div class="hero-stats-row">
+      <div class="hero-stat-chip">
+        <span class="hsc-num">Free</span>
+        <span class="hsc-lbl">To Join</span>
+      </div>
+      <div class="hero-stat-chip">
+        <span class="hsc-num">2 min</span>
+        <span class="hsc-lbl">Sign Up</span>
+      </div>
+      <div class="hero-stat-chip">
+        <span class="hsc-num">100%</span>
+        <span class="hsc-lbl">Verified</span>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ── Right form panel ────────────────────────────────────────── -->
+  <div class="auth-form-panel signup-panel">
+    <div class="auth-inner auth-inner--wide">
+
+      <!-- Mobile-only brand mark -->
+      <div class="form-brand-mark">
+        <mat-icon>directions_car</mat-icon>
+        <span>We'll Share</span>
+      </div>
+
+      <div class="form-heading">
+        <h2>Create your account</h2>
+        <p>Fill in the details below to get started</p>
+      </div>
+
+      <!-- Error banner -->
+      <div *ngIf="errorMessage" class="error-banner">
+        <mat-icon>error_outline</mat-icon> {{ errorMessage }}
+      </div>
+
+      <!-- Stepper -->
+      <mat-stepper [linear]="true" #stepper class="signup-stepper">
+
+        <!-- ── Step 1: Personal Info ──────────────────────────────── -->
+        <mat-step [stepControl]="step1" label="Personal Info">
+          <form [formGroup]="step1" novalidate>
+
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>Full Name</mat-label>
+              <input matInput formControlName="name" placeholder="Arjun Sharma" />
+              <mat-icon matSuffix>person_outline</mat-icon>
+              <mat-error *ngIf="step1.get('name')?.hasError('required')">Name is required</mat-error>
+              <mat-error *ngIf="step1.get('name')?.hasError('minlength')">At least 2 characters</mat-error>
+            </mat-form-field>
+
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>Email Address</mat-label>
+              <input matInput formControlName="email" type="email" placeholder="you@example.com" />
+              <mat-icon matSuffix>mail_outline</mat-icon>
+              <mat-error *ngIf="step1.get('email')?.hasError('required')">Email is required</mat-error>
+              <mat-error *ngIf="step1.get('email')?.hasError('email')">Enter a valid email</mat-error>
+            </mat-form-field>
+
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>Mobile Number</mat-label>
+              <input matInput formControlName="phone" type="tel" placeholder="9876543210" maxlength="10" />
+              <span matTextPrefix>+91&nbsp;</span>
+              <mat-error *ngIf="step1.get('phone')?.hasError('required')">Phone is required</mat-error>
+              <mat-error *ngIf="step1.get('phone')?.hasError('pattern')">Enter a valid 10-digit number</mat-error>
+            </mat-form-field>
+
+            <div class="form-row">
+              <mat-form-field appearance="outline" class="half-width">
+                <mat-label>Gender</mat-label>
+                <mat-select formControlName="gender">
+                  <mat-option value="MALE">Male</mat-option>
+                  <mat-option value="FEMALE">Female</mat-option>
+                  <mat-option value="OTHER">Other</mat-option>
+                </mat-select>
+                <mat-error>Required</mat-error>
+              </mat-form-field>
+
+              <mat-form-field appearance="outline" class="half-width">
+                <mat-label>Date of Birth</mat-label>
+                <input matInput [matDatepicker]="picker" formControlName="dob"
+                       [max]="maxDob" placeholder="DD/MM/YYYY" />
+                <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+                <mat-datepicker #picker startView="multi-year"></mat-datepicker>
+                <mat-error>DOB is required</mat-error>
+              </mat-form-field>
+            </div>
+
+            <div class="step-actions">
+              <button mat-raised-button color="primary" matStepperNext
+                      [disabled]="step1.invalid">
+                Next <mat-icon>arrow_forward</mat-icon>
+              </button>
+            </div>
+          </form>
+        </mat-step>
+
+        <!-- ── Step 2: Password ────────────────────────────────────── -->
+        <mat-step [stepControl]="step2" label="Set Password">
+          <form [formGroup]="step2" novalidate>
+
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>Password</mat-label>
+              <input matInput formControlName="password"
+                     [type]="hidePassword ? 'password' : 'text'"
+                     autocomplete="new-password" />
+              <button mat-icon-button matSuffix type="button"
+                      (click)="hidePassword = !hidePassword" tabindex="-1">
+                <mat-icon>{{ hidePassword ? 'visibility_off' : 'visibility' }}</mat-icon>
+              </button>
+              <mat-hint>Min 8 chars · uppercase · lowercase · digit · special char</mat-hint>
+              <mat-error *ngIf="step2.get('password')?.hasError('required')">Password is required</mat-error>
+              <mat-error *ngIf="step2.get('password')?.hasError('minlength')">At least 8 characters</mat-error>
+              <mat-error *ngIf="step2.get('password')?.hasError('pattern')">
+                Must include uppercase, lowercase, digit, and special character (&#64;#$%^&amp;+=!)
+              </mat-error>
+            </mat-form-field>
+
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>Confirm Password</mat-label>
+              <input matInput formControlName="confirmPassword"
+                     [type]="hideConfirm ? 'password' : 'text'"
+                     autocomplete="new-password" />
+              <button mat-icon-button matSuffix type="button"
+                      (click)="hideConfirm = !hideConfirm" tabindex="-1">
+                <mat-icon>{{ hideConfirm ? 'visibility_off' : 'visibility' }}</mat-icon>
+              </button>
+              <mat-error *ngIf="step2.hasError('passwordMismatch')">Passwords do not match</mat-error>
+            </mat-form-field>
+
+            <div class="step-actions">
+              <button mat-stroked-button matStepperPrevious type="button">
+                <mat-icon>arrow_back</mat-icon> Back
+              </button>
+              <button mat-raised-button color="primary" type="button"
+                      [disabled]="step2.invalid || loading"
+                      (click)="submit()">
+                <mat-spinner *ngIf="loading" diameter="20" class="inline-spinner"></mat-spinner>
+                <span *ngIf="!loading">Create Account</span>
+              </button>
+            </div>
+          </form>
+        </mat-step>
+
+      </mat-stepper>
+
+      <div class="auth-divider"><span>Already a member?</span></div>
+
+      <p class="signup-prompt">
+        <a routerLink="/auth/login" class="signup-cta-btn signup-cta-btn--outline">
+          <mat-icon>login</mat-icon> Sign In
+        </a>
+      </p>
+
+    </div>
+  </div>
+
+</div>

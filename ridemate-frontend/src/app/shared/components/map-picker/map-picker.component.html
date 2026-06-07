@@ -1,0 +1,47 @@
+<!-- Reusable map-picker: search box + Leaflet map -->
+<div class="map-picker">
+
+  <!-- GPS current-location button (shown only when showCurrentLocation=true) -->
+  <div *ngIf="showCurrentLocation" class="gps-row">
+    <button class="gps-btn" type="button"
+            [disabled]="locatingUser"
+            (click)="useCurrentLocation()">
+      <mat-spinner *ngIf="locatingUser" diameter="14" class="gps-spin"></mat-spinner>
+      <mat-icon *ngIf="!locatingUser">my_location</mat-icon>
+      <span>{{ locatingUser ? 'Locating…' : 'Use current location' }}</span>
+    </button>
+    <p *ngIf="geoError" class="gps-error">
+      <mat-icon>error_outline</mat-icon> {{ geoError }}
+    </p>
+  </div>
+
+  <!-- Search box -->
+  <div class="search-wrap">
+    <mat-form-field appearance="outline" class="search-field">
+      <mat-label>{{ label }}</mat-label>
+      <input matInput [formControl]="searchCtrl"
+             (blur)="hideSuggestions()"
+             placeholder="Type to search or click on map…" />
+      <mat-icon matSuffix *ngIf="!searching">search</mat-icon>
+      <mat-spinner matSuffix *ngIf="searching" diameter="18"></mat-spinner>
+    </mat-form-field>
+
+    <!-- Autocomplete suggestions dropdown -->
+    <div class="suggestions" *ngIf="showSuggestions">
+      <div *ngFor="let s of suggestions"
+           class="suggestion-item"
+           (mousedown)="selectSuggestion(s)">
+        <mat-icon>place</mat-icon>
+        <span>{{ s.display_name }}</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Leaflet map canvas -->
+  <div #mapContainer class="map-canvas"></div>
+
+  <p class="map-hint">
+    <mat-icon>info</mat-icon>
+    Click anywhere on the map to drop a pin, or drag the marker to adjust.
+  </p>
+</div>

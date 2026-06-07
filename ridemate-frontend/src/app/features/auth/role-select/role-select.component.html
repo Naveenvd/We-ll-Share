@@ -1,0 +1,56 @@
+<div class="role-wrapper">
+
+  <div class="role-header">
+    <div class="brand-row">
+      <mat-icon class="brand-icon">directions_car</mat-icon>
+      <span class="brand-name">We'll Share</span>
+    </div>
+    <h1>How will you use We'll Share?</h1>
+    <p>Choose your role to personalise your experience. You can switch anytime from the dashboard.</p>
+  </div>
+
+  <div class="role-cards">
+
+    <!-- RIDER card -->
+    <div class="role-card role-card--rider" (click)="select('RIDER')">
+      <div class="role-icon-wrap role-icon-wrap--rider">
+        <mat-icon>person_search</mat-icon>
+      </div>
+      <h2>I'm a Rider</h2>
+      <p class="role-tagline">Find rides, book seats &amp; send parcels</p>
+      <ul class="role-features">
+        <li><mat-icon>check_circle</mat-icon> Search rides on your route</li>
+        <li><mat-icon>check_circle</mat-icon> Book seats instantly</li>
+        <li><mat-icon>check_circle</mat-icon> Send parcels with any driver</li>
+        <li><mat-icon>check_circle</mat-icon> Live trip tracking</li>
+      </ul>
+      <button mat-raised-button class="role-btn role-btn--rider" type="button">
+        <mat-icon>arrow_forward</mat-icon> Continue as Rider
+      </button>
+    </div>
+
+    <!-- DRIVER card -->
+    <div class="role-card role-card--driver" (click)="select('DRIVER')">
+      <div class="role-icon-wrap role-icon-wrap--driver">
+        <mat-icon>drive_eta</mat-icon>
+      </div>
+      <h2>I'm a Driver</h2>
+      <p class="role-tagline">Post rides, earn money &amp; deliver parcels</p>
+      <ul class="role-features">
+        <li><mat-icon>check_circle</mat-icon> Post rides on your daily route</li>
+        <li><mat-icon>check_circle</mat-icon> Accept or reject bookings</li>
+        <li><mat-icon>check_circle</mat-icon> Deliver parcels along the way</li>
+        <li><mat-icon>check_circle</mat-icon> Earn from every trip</li>
+      </ul>
+      <button mat-raised-button class="role-btn role-btn--driver" type="button">
+        <mat-icon>arrow_forward</mat-icon> Continue as Driver
+      </button>
+    </div>
+
+  </div>
+
+  <p class="role-footer">
+    Not sure? You can always switch roles from your dashboard settings.
+  </p>
+
+</div>

@@ -1,0 +1,887 @@
+/* ── RideMate Global Styles ────────────────────────────────────── */
+@use '@angular/material' as mat;
+@include mat.core();
+
+$rm-primary: mat.define-palette(mat.$deep-purple-palette, 600, 200, 900);
+$rm-accent:  mat.define-palette(mat.$amber-palette, 500, 300, 700);
+$rm-warn:    mat.define-palette(mat.$red-palette);
+
+$rm-theme: mat.define-light-theme((
+  color: (primary: $rm-primary, accent: $rm-accent, warn: $rm-warn),
+  typography: mat.define-typography-config(
+    $font-family: "'Plus Jakarta Sans', 'Inter', 'Roboto', sans-serif"
+  ),
+  density: 0
+));
+
+@include mat.all-component-themes($rm-theme);
+
+/* ── Dark Angular Material theme (applied via body.dark-mode) ── */
+$rm-dark-theme: mat.define-dark-theme((
+  color: (primary: $rm-primary, accent: $rm-accent, warn: $rm-warn),
+  typography: mat.define-typography-config(
+    $font-family: "'Plus Jakarta Sans', 'Inter', 'Roboto', sans-serif"
+  ),
+  density: 0
+));
+
+body.dark-mode {
+  @include mat.all-component-colors($rm-dark-theme);
+}
+
+/* ── Google Fonts ───────────────────────────────────────────────── */
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700;800&display=swap');
+
+/* ── Design Tokens ──────────────────────────────────────────────── */
+:root {
+  --rm-primary:       #7c3aed;   /* violet-600   */
+  --rm-primary-dark:  #4c1d95;   /* violet-900   */
+  --rm-primary-light: #a78bfa;   /* violet-400   */
+  --rm-accent:        #f59e0b;   /* amber-500    */
+  --rm-accent-light:  #fcd34d;   /* amber-300    */
+  --rm-surface:       #ffffff;
+  --rm-bg:            #f5f3ff;   /* violet-50 tint */
+  --rm-border:        #e5e7eb;
+  --rm-text:          #1e1b4b;   /* violet-950   */
+  --rm-text-muted:    #6b7280;
+  --rm-shadow-sm:     0 1px 4px rgba(124,58,237,.08);
+  --rm-shadow-md:     0 4px 16px rgba(124,58,237,.14);
+  --rm-shadow-lg:     0 8px 32px rgba(124,58,237,.20);
+  --rm-radius-sm:     8px;
+  --rm-radius-md:     12px;
+  --rm-radius-lg:     16px;
+  --rm-gradient-brand: linear-gradient(135deg, #4c1d95 0%, #6d28d9 50%, #7c3aed 80%, #8b5cf6 100%);
+}
+
+/* ── Reset ──────────────────────────────────────────────────────── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+html, body {
+  height: 100%;
+  font-family: 'Plus Jakarta Sans', 'Inter', 'Roboto', 'Segoe UI', sans-serif;
+  background: var(--rm-bg);
+  color: var(--rm-text);
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ── Typography ─────────────────────────────────────────────────── */
+h1, h2, h3, h4, h5 { font-weight: 700; color: var(--rm-text); }
+h1 { font-size: 28px; }
+h2 { font-size: 22px; }
+h3 { font-size: 18px; }
+h4 { font-size: 15px; }
+
+/* ── Auth Layout ────────────────────────────────────────────────── */
+.auth-container {
+  min-height: 100vh;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  background: var(--rm-bg);
+
+  @media (max-width: 768px) {
+    grid-template-columns: 1fr;
+    .auth-hero { display: none; }
+  }
+}
+
+.auth-hero {
+  background: var(--rm-gradient-brand);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 48px;
+  color: #fff;
+  gap: 24px;
+  position: relative;
+  overflow: hidden;
+
+  /* Decorative blobs */
+  &::before {
+    content: '';
+    position: absolute;
+    width: 320px; height: 320px;
+    border-radius: 50%;
+    background: rgba(255,255,255,.06);
+    top: -80px; right: -60px;
+    pointer-events: none;
+  }
+  &::after {
+    content: '';
+    position: absolute;
+    width: 220px; height: 220px;
+    border-radius: 50%;
+    background: rgba(251,191,36,.08);
+    bottom: -50px; left: 5%;
+    pointer-events: none;
+  }
+
+  .hero-icon {
+    width: 80px;
+    height: 80px;
+    background: rgba(255,255,255,.15);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative; z-index: 1;
+    mat-icon { font-size: 44px; width: 44px; height: 44px; color: #fff; }
+  }
+
+  h1 { color: #fff; font-size: 36px; font-weight: 800; position: relative; z-index: 1; }
+  p  { color: rgba(255,255,255,.8); font-size: 15px; line-height: 1.7;
+       text-align: center; max-width: 340px; position: relative; z-index: 1; }
+
+  .hero-features {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-top: 8px;
+    position: relative; z-index: 1;
+
+    li {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 14px;
+      color: rgba(255,255,255,.9);
+      mat-icon { font-size: 18px; width: 18px; height: 18px; color: #fbbf24; }
+    }
+  }
+}
+
+.auth-form-panel {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 32px 24px;
+  background: var(--rm-surface);
+
+  .auth-inner {
+    width: 100%;
+    max-width: 400px;
+  }
+}
+
+.auth-card {
+  width: 100%;
+  max-width: 420px;
+  border-radius: var(--rm-radius-lg) !important;
+  box-shadow: var(--rm-shadow-lg) !important;
+  &--wide { max-width: 560px; }
+}
+
+/* ── Brand block ────────────────────────────────────────────────── */
+.brand {
+  text-align: center;
+  padding: 32px 24px 12px;
+
+  .brand-icon {
+    font-size: 48px; width: 48px; height: 48px;
+    color: var(--rm-primary);
+  }
+
+  h1 {
+    margin: 8px 0 4px;
+    font-size: 26px;
+    font-weight: 800;
+    color: var(--rm-primary-dark);
+    letter-spacing: -0.5px;
+  }
+
+  .brand-sub { color: var(--rm-text-muted); font-size: 13px; line-height: 1.5; }
+}
+
+/* ── Page wrapper (for feature pages) ──────────────────────────── */
+.page-wrapper {
+  max-width: 860px;
+  margin: 0 auto;
+  padding: 24px 16px 60px;
+}
+
+.page-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 24px;
+
+  h2 { margin: 0; font-size: 20px; font-weight: 700; color: var(--rm-primary-dark); }
+  a[mat-icon-button] { color: var(--rm-primary-dark); }
+}
+
+/* ── Cards ──────────────────────────────────────────────────────── */
+mat-card {
+  border-radius: var(--rm-radius-md) !important;
+  box-shadow: var(--rm-shadow-sm) !important;
+  border: 1px solid var(--rm-border) !important;
+}
+
+mat-card-content { padding: 20px 24px !important; }
+mat-card-actions { padding: 0 24px 20px !important; }
+
+/* ── Form helpers ───────────────────────────────────────────────── */
+.full-width { width: 100%; }
+.half-width { width: calc(50% - 8px); }
+
+.form-row { display: flex; gap: 16px; }
+
+.form-section-title {
+  font-size: 13px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+  color: var(--rm-text-muted);
+  margin: 20px 0 12px;
+}
+
+/* ── Submit button ──────────────────────────────────────────────── */
+.submit-btn {
+  height: 48px;
+  font-size: 15px;
+  font-weight: 600;
+  letter-spacing: 0.3px;
+  border-radius: var(--rm-radius-sm) !important;
+  margin-top: 8px;
+}
+
+.inline-spinner { display: inline-block; margin: auto; }
+
+/* ── Error banner ───────────────────────────────────────────────── */
+.error-banner {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: #fff0f0;
+  border: 1px solid #fca5a5;
+  color: #b91c1c;
+  border-radius: var(--rm-radius-sm);
+  padding: 10px 14px;
+  margin-bottom: 16px;
+  font-size: 13px;
+  font-weight: 500;
+  mat-icon { font-size: 18px; width: 18px; height: 18px; flex-shrink: 0; }
+}
+
+/* ── Links ──────────────────────────────────────────────────────── */
+.forgot-link {
+  text-align: right;
+  margin: -4px 0 14px;
+  a { font-size: 13px; color: var(--rm-primary); text-decoration: none; font-weight: 500; }
+  a:hover { text-decoration: underline; }
+}
+
+.footer-text {
+  font-size: 14px;
+  color: var(--rm-text-muted);
+  a { color: var(--rm-primary); font-weight: 600; text-decoration: none; }
+  a:hover { text-decoration: underline; }
+}
+
+/* ── Step actions ───────────────────────────────────────────────── */
+.step-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 20px;
+  padding-top: 8px;
+  border-top: 1px solid var(--rm-border);
+}
+
+/* ── OTP field ──────────────────────────────────────────────────── */
+.otp-field input {
+  font-size: 30px;
+  letter-spacing: 14px;
+  text-align: center;
+  font-weight: 700;
+  color: var(--rm-primary-dark);
+}
+
+/* ── Resend section ─────────────────────────────────────────────── */
+.resend-section {
+  text-align: center;
+  margin-top: 16px;
+  .resend-timer { font-size: 13px; color: var(--rm-text-muted); }
+}
+
+/* ── Step hint ──────────────────────────────────────────────────── */
+.step-hint {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: #ecfdf5;
+  border: 1px solid #6ee7b7;
+  border-radius: var(--rm-radius-sm);
+  padding: 10px 14px;
+  margin-bottom: 16px;
+  font-size: 13px;
+  color: #065f46;
+  mat-icon { font-size: 16px; width: 16px; height: 16px; }
+}
+
+/* ── Success panel ──────────────────────────────────────────────── */
+.success-panel {
+  text-align: center;
+  padding: 32px 0;
+  .success-icon { font-size: 72px; width: 72px; height: 72px; color: #16a34a; }
+  h2 { color: #166534; margin: 12px 0 8px; }
+  p  { color: var(--rm-text-muted); margin-bottom: 24px; }
+}
+
+/* ── Notice / alert blocks ──────────────────────────────────────── */
+.notice {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 12px 16px;
+  border-radius: var(--rm-radius-sm);
+  font-size: 13px;
+  margin: 10px 0;
+  line-height: 1.5;
+
+  mat-icon { font-size: 18px; width: 18px; height: 18px; flex-shrink: 0; margin-top: 1px; }
+  a { color: inherit; font-weight: 600; }
+
+  &--warning { background: #fffbeb; color: #92400e; border: 1px solid #fde68a; }
+  &--error   { background: #fff0f0; color: #b91c1c; border: 1px solid #fca5a5; }
+  &--info    { background: #eff6ff; color: #1e40af; border: 1px solid #93c5fd; }
+  &--success { background: #ecfdf5; color: #065f46; border: 1px solid #6ee7b7; }
+}
+
+/* ── Leaflet map pins ───────────────────────────────────────────── */
+.map-pin {
+  padding: 4px 10px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 700;
+  white-space: nowrap;
+  box-shadow: 0 2px 8px rgba(0,0,0,.25);
+  cursor: pointer;
+  &--from { background: var(--rm-primary-dark); color: #fff; }
+  &--to   { background: #b91c1c; color: #fff; }
+  &--ride { background: #16a34a; color: #fff; }
+}
+
+.leaflet-popup-content-wrapper {
+  border-radius: var(--rm-radius-sm) !important;
+  font-family: 'Plus Jakarta Sans', 'Inter', sans-serif;
+  font-size: 13px;
+  box-shadow: var(--rm-shadow-md) !important;
+}
+
+/* ── Snackbar themes ────────────────────────────────────────────── */
+.snack-error   .mdc-snackbar__surface { background: #dc2626 !important; color: #fff !important; }
+.snack-success .mdc-snackbar__surface { background: #16a34a !important; color: #fff !important; }
+.snack-warn    .mdc-snackbar__surface { background: #d97706 !important; color: #fff !important; }
+.snack-info    .mdc-snackbar__surface { background: #1d4ed8 !important; color: #fff !important; }
+
+/* ── Status chips ───────────────────────────────────────────────── */
+.chip-verified             { background: #dcfce7 !important; color: #166534 !important; }
+.chip-pending_verification { background: #fef9c3 !important; color: #854d0e !important; }
+.chip-rejected             { background: #fee2e2 !important; color: #991b1b !important; }
+.chip-suspended            { background: #fce7f3 !important; color: #9d174d !important; }
+
+/* ── Scrollbar ──────────────────────────────────────────────────── */
+::-webkit-scrollbar               { width: 5px; height: 5px; }
+::-webkit-scrollbar-track         { background: transparent; }
+::-webkit-scrollbar-thumb         { background: #c4b5fd; border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover   { background: #a78bfa; }
+
+/* ── Page entry animation ───────────────────────────────────────── */
+router-outlet + * {
+  animation: rmFadeIn 0.2s ease-out;
+}
+@keyframes rmFadeIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ── Focus rings (keyboard only) ───────────────────────────────── */
+.cdk-mouse-focused *:focus { outline: none !important; }
+
+/* ── Utility ────────────────────────────────────────────────────── */
+.text-muted   { color: var(--rm-text-muted) !important; }
+.text-success { color: #16a34a !important; }
+.text-warn    { color: #d97706 !important; }
+.text-error   { color: #dc2626 !important; }
+.text-primary { color: var(--rm-primary) !important; }
+.fw-600       { font-weight: 600 !important; }
+.fw-700       { font-weight: 700 !important; }
+.d-flex       { display: flex !important; }
+.align-center { align-items: center !important; }
+.gap-8        { gap: 8px !important; }
+.mt-8         { margin-top: 8px !important; }
+.mt-16        { margin-top: 16px !important; }
+.mb-8         { margin-bottom: 8px !important; }
+.mb-16        { margin-bottom: 16px !important; }
+
+/* ── Signup extras ──────────────────────────────────────────────── */
+.signup-panel {
+  overflow-y: auto;
+  align-items: flex-start;
+  padding-top: 40px;
+  padding-bottom: 40px;
+}
+
+.auth-inner--wide { max-width: 480px; }
+
+.signup-stepper {
+  background: transparent !important;
+  .mat-step-header { padding: 8px 0 !important; }
+}
+
+/* ── Login / Auth form panel extras ────────────────────────────── */
+.form-heading {
+  margin-bottom: 28px;
+  h2 { font-size: 24px; font-weight: 800; color: var(--rm-text); margin-bottom: 4px; }
+  p  { font-size: 14px; color: var(--rm-text-muted); }
+}
+
+.login-form {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.signup-prompt {
+  margin-top: 8px;
+  text-align: center;
+  font-size: 14px;
+  color: var(--rm-text-muted);
+  /* regular links inside (not the big CTA button) */
+  a:not(.signup-cta-btn) {
+    color: var(--rm-primary); font-weight: 600; text-decoration: none;
+    &:hover { text-decoration: underline; }
+  }
+}
+
+/* ── Responsive ─────────────────────────────────────────────────── */
+@media (max-width: 600px) {
+  .form-row          { flex-direction: column !important; gap: 0 !important; }
+  .half-width        { width: 100% !important; }
+  .page-wrapper      { padding: 16px 12px 80px !important; }
+}
+
+/* ════════════════════════════════════════════════════════════════
+   COLOUR THEMES  (applied via [data-color="..."] on <html>)
+
+   A Sass mixin sets both our CSS design tokens AND the most
+   visible Angular Material MDC CSS custom properties so that
+   buttons, form-field focus rings, checkboxes, slide-toggles,
+   steppers and progress-spinners all follow the active colour.
+
+   Order: colour overrides come BEFORE dark-mode overrides so that
+   dark mode always wins on bg / surface / text variables.
+   ════════════════════════════════════════════════════════════════ */
+
+@mixin rm-brand($p, $pd, $pl) {
+  /* ── Our design tokens ──────────────────────────────────────── */
+  --rm-primary:       #{$p};
+  --rm-primary-dark:  #{$pd};
+  --rm-primary-light: #{$pl};
+
+  /* ── Angular Material MDC component tokens ──────────────────── */
+
+  /* Buttons */
+  --mdc-filled-button-container-color:    #{$p};
+  --mdc-protected-button-container-color: #{$p};
+  --mdc-text-button-label-text-color:     #{$p};
+  --mdc-outlined-button-label-text-color: #{$p};
+  --mdc-outlined-button-outline-color:    #{$p};
+
+  /* Form-field (outlined + filled) caret & focus */
+  --mdc-outlined-text-field-caret-color:            #{$p};
+  --mdc-outlined-text-field-focus-outline-color:    #{$p};
+  --mdc-outlined-text-field-focus-label-text-color: #{$p};
+  --mdc-filled-text-field-caret-color:              #{$p};
+  --mdc-filled-text-field-focus-active-indicator-color: #{$p};
+  --mdc-filled-text-field-focus-label-text-color:   #{$p};
+
+  /* Checkbox */
+  --mdc-checkbox-selected-icon-color:           #{$p};
+  --mdc-checkbox-selected-focus-icon-color:     #{$p};
+  --mdc-checkbox-selected-hover-icon-color:     #{$p};
+  --mdc-checkbox-selected-pressed-icon-color:   #{$p};
+
+  /* Slide toggle */
+  --mdc-switch-selected-handle-color:           #{$p};
+  --mdc-switch-selected-focus-handle-color:     #{$pd};
+  --mdc-switch-selected-hover-handle-color:     #{$pd};
+  --mdc-switch-selected-pressed-handle-color:   #{$pd};
+  --mdc-switch-selected-track-color:            #{rgba($p, 0.5)};
+  --mdc-switch-selected-hover-track-color:      #{rgba($pd, 0.5)};
+  --mdc-switch-selected-focus-track-color:      #{rgba($pd, 0.5)};
+  --mdc-switch-selected-pressed-track-color:    #{rgba($pd, 0.5)};
+
+  /* Radio */
+  --mdc-radio-selected-icon-color:              #{$p};
+  --mdc-radio-selected-focus-icon-color:        #{$p};
+  --mdc-radio-selected-hover-icon-color:        #{$p};
+  --mdc-radio-selected-pressed-icon-color:      #{$p};
+
+  /* Spinner / progress */
+  --mdc-circular-progress-active-indicator-color: #{$p};
+
+  /* Stepper */
+  --mat-stepper-header-selected-state-icon-background-color: #{$p};
+  --mat-stepper-header-done-state-icon-background-color:     #{$p};
+  --mat-stepper-header-edit-state-icon-background-color:     #{$p};
+
+  /* Select / form misc */
+  --mat-select-focused-arrow-color:             #{$p};
+  --mat-option-selected-state-label-text-color: #{$p};
+  --mat-minimal-pseudo-checkbox-selected-checkmark-color: #{$p};
+}
+
+/* Violet is the default in :root so no [data-color="violet"] block is needed. */
+
+[data-color="blue"] {
+  @include rm-brand(#2563eb, #1e40af, #60a5fa);
+  --rm-bg:             #eff6ff;
+  --rm-text:           #1e3a8a;
+  --rm-gradient-brand: linear-gradient(135deg, #1e3a8a 0%, #1d4ed8 50%, #2563eb 80%, #3b82f6 100%);
+  --rm-shadow-sm:      0 1px 4px rgba(37,99,235,.08);
+  --rm-shadow-md:      0 4px 16px rgba(37,99,235,.14);
+  --rm-shadow-lg:      0 8px 32px rgba(37,99,235,.20);
+}
+
+[data-color="teal"] {
+  @include rm-brand(#0d9488, #0f766e, #2dd4bf);
+  --rm-bg:             #f0fdfa;
+  --rm-text:           #134e4a;
+  --rm-gradient-brand: linear-gradient(135deg, #134e4a 0%, #0f766e 50%, #0d9488 80%, #14b8a6 100%);
+  --rm-shadow-sm:      0 1px 4px rgba(13,148,136,.08);
+  --rm-shadow-md:      0 4px 16px rgba(13,148,136,.14);
+  --rm-shadow-lg:      0 8px 32px rgba(13,148,136,.20);
+}
+
+[data-color="rose"] {
+  @include rm-brand(#e11d48, #9f1239, #fb7185);
+  --rm-bg:             #fff1f2;
+  --rm-text:           #4c0519;
+  --rm-gradient-brand: linear-gradient(135deg, #881337 0%, #be123c 50%, #e11d48 80%, #f43f5e 100%);
+  --rm-shadow-sm:      0 1px 4px rgba(225,29,72,.08);
+  --rm-shadow-md:      0 4px 16px rgba(225,29,72,.14);
+  --rm-shadow-lg:      0 8px 32px rgba(225,29,72,.20);
+}
+
+[data-color="emerald"] {
+  @include rm-brand(#059669, #065f46, #34d399);
+  --rm-bg:             #f0fdf4;
+  --rm-text:           #064e3b;
+  --rm-gradient-brand: linear-gradient(135deg, #064e3b 0%, #065f46 50%, #059669 80%, #10b981 100%);
+  --rm-shadow-sm:      0 1px 4px rgba(5,150,105,.08);
+  --rm-shadow-md:      0 4px 16px rgba(5,150,105,.14);
+  --rm-shadow-lg:      0 8px 32px rgba(5,150,105,.20);
+}
+
+/* ════════════════════════════════════════════════════════════════
+   DARK MODE  — applied via [data-theme="dark"] on <html>
+   These must come AFTER colour themes in source order so they
+   win on bg / surface / border / text when specificity is equal.
+   ════════════════════════════════════════════════════════════════ */
+
+[data-theme="dark"] {
+  --rm-bg:          #0f0e1a;
+  --rm-surface:     #1a1827;
+  --rm-border:      #2d2b45;
+  --rm-text:        #ede9fe;
+  --rm-text-muted:  #9d99b8;
+  --rm-shadow-sm:   0 1px 4px rgba(0,0,0,.40);
+  --rm-shadow-md:   0 4px 16px rgba(0,0,0,.50);
+  --rm-shadow-lg:   0 8px 32px rgba(0,0,0,.60);
+
+  /* mat-card dark surface */
+  mat-card { background: var(--rm-surface) !important; }
+
+  /* Error banner dark */
+  .error-banner {
+    background: rgba(185,28,28,.15);
+    border-color: rgba(252,165,165,.3);
+    color: #fca5a5;
+  }
+
+  /* Step hint dark */
+  .step-hint {
+    background: rgba(6,95,70,.2);
+    border-color: rgba(110,231,183,.3);
+    color: #6ee7b7;
+  }
+
+  /* Notice blocks dark */
+  .notice {
+    &--warning { background: rgba(146,64,14,.15); border-color: rgba(253,230,138,.25); color: #fde68a; }
+    &--error   { background: rgba(185,28,28,.15); border-color: rgba(252,165,165,.25); color: #fca5a5; }
+    &--info    { background: rgba(30,64,175,.15); border-color: rgba(147,197,253,.25); color: #93c5fd; }
+    &--success { background: rgba(6,95,70,.15);  border-color: rgba(110,231,183,.25); color: #6ee7b7; }
+  }
+
+  /* Leaflet map pin colours stay vivid — keep as-is */
+
+  /* Auth form panel */
+  .auth-form-panel { background: var(--rm-surface); }
+
+  /* Page wrapper / topbar */
+  .dash-topbar { border-color: var(--rm-border); }
+
+  /* Scrollbar dark */
+  ::-webkit-scrollbar-thumb       { background: #3d3a5c; }
+  ::-webkit-scrollbar-thumb:hover { background: #5b5780; }
+
+  /* Status chips dark */
+  .chip-verified             { background: rgba(22,163,74,.15)   !important; color: #86efac !important; }
+  .chip-pending_verification { background: rgba(202,138,4,.15)   !important; color: #fde047 !important; }
+  .chip-rejected             { background: rgba(220,38,38,.15)   !important; color: #fca5a5 !important; }
+  .chip-suspended            { background: rgba(219,39,119,.15)  !important; color: #f9a8d4 !important; }
+  .chip-active               { background: rgba(5,150,105,.15)   !important; color: #6ee7b7 !important; }
+  .chip-scheduled            { background: rgba(37,99,235,.15)   !important; color: #93c5fd !important; }
+  .chip-cancelled            { background: rgba(107,114,128,.12) !important; color: #d1d5db !important; }
+  .chip-completed            { background: rgba(124,58,237,.15)  !important; color: #c4b5fd !important; }
+
+  /* Form brand mark uses primary-dark which is invisible on dark bg */
+  .form-brand-mark { color: var(--rm-text); }
+
+  /* Page/section headers that use primary-dark */
+  .page-header h2 { color: var(--rm-primary-light); }
+
+}
+
+/* ════════════════════════════════════════════════════════════════
+   PREMIUM GLOBAL ENHANCEMENTS
+   All pure visual — zero functional changes.
+   ════════════════════════════════════════════════════════════════ */
+
+/* ── Hero decorative rings ──────────────────────────────────────── */
+.hero-ring {
+  position: absolute;
+  border-radius: 50%;
+  border: 1px solid rgba(255,255,255,.07);
+  pointer-events: none;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+
+  &--1 { width: 280px; height: 280px; }
+  &--2 { width: 440px; height: 440px; border-color: rgba(255,255,255,.05); }
+  &--3 { width: 620px; height: 620px; border-color: rgba(255,255,255,.03); }
+}
+
+/* ── Hero stat chips ─────────────────────────────────────────────── */
+.hero-stats-row {
+  display: flex;
+  gap: 10px;
+  margin-top: 28px;
+  position: relative;
+  z-index: 1;
+}
+
+.hero-stat-chip {
+  flex: 1;
+  background: rgba(255,255,255,.12);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border: 1px solid rgba(255,255,255,.18);
+  border-radius: 14px;
+  padding: 12px 10px;
+  text-align: center;
+
+  .hsc-num {
+    display: block;
+    font-size: 16px;
+    font-weight: 800;
+    color: #fff;
+    line-height: 1;
+    margin-bottom: 3px;
+  }
+
+  .hsc-lbl {
+    font-size: 10px;
+    font-weight: 500;
+    color: rgba(255,255,255,.72);
+    text-transform: uppercase;
+    letter-spacing: .4px;
+  }
+}
+
+/* ── Form brand mark (shows on mobile when hero is hidden) ────────── */
+.form-brand-mark {
+  display: none;
+  align-items: center;
+  gap: 8px;
+  font-size: 17px;
+  font-weight: 800;
+  color: var(--rm-primary-dark);
+  margin-bottom: 24px;
+
+  mat-icon {
+    font-size: 24px;
+    width: 24px;
+    height: 24px;
+    color: var(--rm-primary);
+  }
+
+  @media (max-width: 768px) { display: flex; }
+}
+
+/* ── Auth divider ────────────────────────────────────────────────── */
+.auth-divider {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 22px 0 14px;
+
+  &::before, &::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--rm-border);
+  }
+
+  span {
+    font-size: 12px;
+    color: var(--rm-text-muted);
+    font-weight: 500;
+    white-space: nowrap;
+  }
+}
+
+/* ── Signup CTA button (link styled as pill button) ──────────────── */
+.signup-cta-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 10px 22px;
+  border-radius: 100px;
+  font-size: 14px;
+  font-weight: 600;
+  text-decoration: none;
+  background: var(--rm-gradient-brand);
+  color: #fff !important;
+  box-shadow: 0 4px 14px rgba(124,58,237,.35);
+  transition: box-shadow .2s, transform .15s;
+  width: 100%;
+  justify-content: center;
+
+  mat-icon { font-size: 18px; width: 18px; height: 18px; }
+
+  &:hover {
+    box-shadow: 0 6px 20px rgba(124,58,237,.45);
+    transform: translateY(-1px);
+    text-decoration: none;
+  }
+
+  &--outline {
+    background: transparent;
+    border: 2px solid var(--rm-primary);
+    color: var(--rm-primary) !important;
+    box-shadow: none;
+
+    &:hover {
+      background: var(--rm-bg);
+      box-shadow: var(--rm-shadow-sm);
+      transform: translateY(-1px);
+    }
+  }
+}
+
+/* ── Premium primary buttons (global) ────────────────────────────── */
+button.mat-mdc-raised-button.mat-primary,
+button.mat-mdc-flat-button.mat-primary {
+  background: linear-gradient(135deg,
+    var(--rm-primary-dark) 0%,
+    var(--rm-primary)      100%) !important;
+  box-shadow: 0 4px 14px rgba(124,58,237,.35) !important;
+  font-weight: 600;
+  letter-spacing: .3px;
+  transition: box-shadow .2s, transform .15s !important;
+
+  &:hover:not([disabled]) {
+    box-shadow: 0 6px 20px rgba(124,58,237,.45) !important;
+    transform: translateY(-1px);
+  }
+
+  &:active:not([disabled]) {
+    transform: translateY(0);
+    box-shadow: 0 2px 8px rgba(124,58,237,.3) !important;
+  }
+}
+
+/* ── Premium submit button height ────────────────────────────────── */
+.submit-btn {
+  height: 50px !important;
+  font-size: 15px !important;
+  border-radius: 12px !important;
+}
+
+/* ── Enhanced mat-card global ────────────────────────────────────── */
+mat-card {
+  transition: box-shadow .2s, transform .2s !important;
+}
+
+/* ── Better page header ──────────────────────────────────────────── */
+.page-header {
+  h2 {
+    font-size: 22px;
+    font-weight: 800;
+    letter-spacing: -.3px;
+  }
+}
+
+/* ── Section label (small caps header above a group) ─────────────── */
+.section-label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: .8px;
+  color: var(--rm-text-muted);
+  margin: 24px 0 12px;
+
+  &::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--rm-border);
+  }
+}
+
+/* ── Improved empty states (global) ─────────────────────────────── */
+.empty-state {
+  text-align: center;
+  padding: 64px 24px;
+}
+
+/* ── Smooth global micro-transitions ─────────────────────────────── */
+a, button {
+  transition: color .15s, background-color .15s, border-color .15s,
+              box-shadow .15s, transform .15s, opacity .15s;
+}
+
+/* ── Status chip global tweaks ────────────────────────────────────── */
+.chip-active    { background: #ecfdf5 !important; color: #065f46 !important; }
+.chip-scheduled { background: #eff6ff !important; color: #1e40af !important; }
+.chip-cancelled { background: #f9fafb !important; color: #6b7280 !important; }
+.chip-completed { background: #f5f3ff !important; color: #6d28d9 !important; }
+
+/* ── Better mat-form-field hover ─────────────────────────────────── */
+.mat-mdc-form-field:not(.mat-form-field-disabled):hover
+  .mdc-notched-outline__leading,
+.mat-mdc-form-field:not(.mat-form-field-disabled):hover
+  .mdc-notched-outline__notch,
+.mat-mdc-form-field:not(.mat-form-field-disabled):hover
+  .mdc-notched-outline__trailing {
+  border-color: var(--rm-primary-light) !important;
+  transition: border-color .15s;
+}
+
+/* ── Page entry animation (enhanced) ────────────────────────────── */
+@keyframes rmFadeIn {
+  from { opacity: 0; transform: translateY(12px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+router-outlet + * {
+  animation: rmFadeIn 0.25s cubic-bezier(.16,1,.3,1);
+}

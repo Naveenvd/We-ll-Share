@@ -1,0 +1,185 @@
+<div class="page-wrapper">
+
+  <div class="page-header">
+    <a mat-icon-button onclick="history.back()"><mat-icon>arrow_back</mat-icon></a>
+    <h2>Parcel #{{ parcelId }}</h2>
+    <span *ngIf="parcel"
+          class="status-badge status-badge--{{ parcel.status.toLowerCase().replace('_','-') }}">
+      {{ statusLabel(parcel.status) }}
+    </span>
+  </div>
+
+  <div *ngIf="loading" class="center-spinner"><mat-spinner diameter="48"></mat-spinner></div>
+
+  <ng-container *ngIf="!loading && parcel">
+
+    <!-- ── Summary card ── -->
+    <mat-card class="section-card">
+      <mat-card-content>
+        <div class="section-title">Parcel Info</div>
+
+        <div class="route-row">
+          <span class="loc from">{{ parcel.fromLocation }}</span>
+          <mat-icon class="arrow-icon">arrow_forward</mat-icon>
+          <span class="loc to">{{ parcel.toLocation }}</span>
+        </div>
+
+        <div class="meta-grid">
+          <div class="meta-item">
+            <mat-icon>inventory_2</mat-icon>
+            <div><div class="meta-label">Size</div>{{ parcel.size }}</div>
+          </div>
+          <div class="meta-item">
+            <mat-icon>currency_rupee</mat-icon>
+            <div><div class="meta-label">Price Offered</div>
+              <span class="amount">₹{{ parcel.price }}</span></div>
+          </div>
+          <div class="meta-item">
+            <mat-icon>directions_car</mat-icon>
+            <div><div class="meta-label">Ride</div>
+              {{ parcel.ride.departureTime | date:'d MMM, h:mm a' }}</div>
+          </div>
+          <div class="meta-item">
+            <mat-icon>person</mat-icon>
+            <div><div class="meta-label">Driver</div>{{ parcel.ride.driver.name }}</div>
+          </div>
+        </div>
+
+        <div class="description-box">
+          <div class="meta-label">Description</div>
+          <p>{{ parcel.description }}</p>
+        </div>
+
+        <!-- Parcel photo -->
+        <div *ngIf="parcel.photoUrl" class="photo-row">
+          <div class="meta-label">Parcel Photo</div>
+          <img [src]="parcel.photoUrl" class="evidence-photo" alt="Parcel" />
+        </div>
+      </mat-card-content>
+    </mat-card>
+
+    <!-- ── OTP cards (sender view) ── -->
+    <mat-card *ngIf="parcel.pickupOtp" class="section-card otp-card">
+      <mat-card-content>
+        <div class="section-title">Pickup OTP — Show to Driver</div>
+        <div class="otp-display">{{ parcel.pickupOtp }}</div>
+        <div *ngIf="parcel.pickupOtpVerified" class="verified-row">
+          <mat-icon>check_circle</mat-icon> Pickup Verified
+        </div>
+      </mat-card-content>
+    </mat-card>
+
+    <mat-card *ngIf="parcel.deliveryOtp" class="section-card otp-card otp-card--delivery">
+      <mat-card-content>
+        <div class="section-title">Delivery OTP — Share with Receiver</div>
+        <div class="otp-display otp-display--blue">{{ parcel.deliveryOtp }}</div>
+        <div *ngIf="parcel.deliveryOtpVerified" class="verified-row verified-row--blue">
+          <mat-icon>check_circle</mat-icon> Delivered!
+        </div>
+      </mat-card-content>
+    </mat-card>
+
+    <!-- ── Proof photos (visible to both parties) ── -->
+    <mat-card *ngIf="parcel.beforePhotoUrl || parcel.afterPhotoUrl" class="section-card">
+      <mat-card-content>
+        <div class="section-title">Proof Photos</div>
+        <div class="proof-photos">
+          <div *ngIf="parcel.beforePhotoUrl" class="proof-item">
+            <div class="meta-label">At Pickup</div>
+            <img [src]="parcel.beforePhotoUrl" class="evidence-photo" alt="Before" />
+          </div>
+          <div *ngIf="parcel.afterPhotoUrl" class="proof-item">
+            <div class="meta-label">At Delivery</div>
+            <img [src]="parcel.afterPhotoUrl" class="evidence-photo" alt="After" />
+          </div>
+        </div>
+      </mat-card-content>
+    </mat-card>
+
+    <!-- ── Safety + Review actions ── -->
+    <div class="safety-actions"
+         *ngIf="['DELIVERED','CANCELLED','COMPLAINT_RAISED'].includes(parcel.status)">
+      <!-- Review only for DELIVERED -->
+      <button mat-flat-button color="primary"
+              *ngIf="parcel.status === 'DELIVERED'"
+              (click)="openReviewDialog()">
+        <mat-icon>star</mat-icon>
+        Rate {{ isSender() ? 'Driver' : 'Sender' }}
+      </button>
+      <button mat-stroked-button color="warn" (click)="openReportDialog()">
+        <mat-icon>flag</mat-icon>
+        Report {{ isSender() ? 'Driver' : 'Sender' }}
+      </button>
+    </div>
+
+    <!-- ── Complaint form ── -->
+    <mat-card *ngIf="canRaiseComplaint()" class="section-card complaint-card">
+      <mat-card-content>
+        <button mat-stroked-button color="warn"
+                *ngIf="!showComplaint"
+                (click)="showComplaint = true">
+          <mat-icon>flag</mat-icon> Raise a Complaint
+        </button>
+
+        <div *ngIf="showComplaint">
+          <div class="section-title">
+            <mat-icon color="warn">flag</mat-icon> Describe the Issue
+          </div>
+          <mat-form-field appearance="outline" class="full-width">
+            <textarea matInput rows="4"
+                      placeholder="Describe what went wrong (min 10 characters)…"
+                      [(ngModel)]="complaintText" maxlength="1000">
+            </textarea>
+          </mat-form-field>
+          <div class="complaint-actions">
+            <button mat-stroked-button (click)="showComplaint = false">Cancel</button>
+            <button mat-flat-button color="warn"
+                    [disabled]="complaintText.trim().length < 10 || submittingComplaint"
+                    (click)="submitComplaint()">
+              <mat-spinner *ngIf="submittingComplaint" diameter="18"></mat-spinner>
+              Submit Complaint
+            </button>
+          </div>
+        </div>
+      </mat-card-content>
+    </mat-card>
+
+    <div *ngIf="parcel.status === 'COMPLAINT_RAISED'" class="complaint-notice">
+      <mat-icon>flag</mat-icon>
+      A complaint has been raised. Our admin team will review it shortly.
+    </div>
+
+  </ng-container>
+
+  <!-- ── Chat panel ── -->
+  <mat-card class="chat-card" *ngIf="!loading && parcel">
+    <mat-card-content class="chat-content">
+      <div class="section-title chat-title"><mat-icon>chat</mat-icon> Chat</div>
+
+      <div class="messages-list" #chatList>
+        <div *ngIf="messages.length === 0" class="no-messages">No messages yet.</div>
+        <div *ngFor="let m of messages"
+             class="message-bubble"
+             [class.mine]="isMine(m)"
+             [class.theirs]="!isMine(m)">
+          <div class="bubble-sender">{{ isMine(m) ? 'You' : m.senderName }}</div>
+          <div class="bubble-text">{{ m.text }}</div>
+          <div class="bubble-time">{{ m.sentAt | date:'h:mm a' }}</div>
+        </div>
+        <div #messagesEnd></div>
+      </div>
+
+      <div class="chat-input-row">
+        <mat-form-field appearance="outline" class="chat-field">
+          <input matInput placeholder="Type a message…"
+                 [(ngModel)]="newText" (keydown)="onKeydown($event)" maxlength="500" />
+        </mat-form-field>
+        <button mat-icon-button color="primary"
+                [disabled]="!newText.trim() || sending" (click)="send()">
+          <mat-icon>send</mat-icon>
+        </button>
+      </div>
+    </mat-card-content>
+  </mat-card>
+
+</div>

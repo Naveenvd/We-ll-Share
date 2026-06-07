@@ -1,0 +1,501 @@
+/* ════════════════════════════════════════════════════════════════
+   Find a Ride — Unified Map Design
+   ════════════════════════════════════════════════════════════════ */
+
+.sr-page { min-height: 100vh; background: var(--rm-bg); display: flex; flex-direction: column; }
+
+/* ── Hero band ────────────────────────────────────────────────── */
+.sr-hero-band {
+  background: var(--rm-gradient-brand);
+  padding: 32px 24px 88px;
+  position: relative;
+  overflow: hidden;
+
+  &::before {
+    content: ''; position: absolute;
+    width: 320px; height: 320px; border-radius: 50%;
+    background: rgba(255,255,255,.05);
+    top: -90px; right: -60px; pointer-events: none;
+  }
+  &::after {
+    content: ''; position: absolute;
+    width: 200px; height: 200px; border-radius: 50%;
+    background: rgba(251,191,36,.07);
+    bottom: -40px; left: 10%; pointer-events: none;
+  }
+}
+
+.hero-inner { max-width: 860px; margin: 0 auto; position: relative; z-index: 1; }
+
+.hero-back {
+  display: inline-flex; align-items: center; gap: 4px;
+  color: rgba(255,255,255,.75); text-decoration: none; font-size: 13px; font-weight: 500;
+  margin-bottom: 14px; transition: color .15s;
+  mat-icon { font-size: 18px; width: 18px; height: 18px; }
+  &:hover { color: #fff; }
+}
+
+.hero-text {
+  h1 { color: #fff; font-size: 34px; font-weight: 800; margin: 0 0 6px; letter-spacing: -.5px; }
+  p  { color: rgba(255,255,255,.75); font-size: 14px; }
+}
+
+.hero-accent { color: #fbbf24; }
+
+/* ── Floating search card ─────────────────────────────────────── */
+.sr-card-wrap {
+  max-width: 860px; width: 100%; margin: -68px auto 0; padding: 0 20px; position: relative; z-index: 10;
+}
+
+.sr-card {
+  background: var(--rm-surface);
+  border-radius: 20px;
+  padding: 24px 28px 20px;
+  box-shadow: 0 20px 64px rgba(76,29,149,.18), 0 4px 16px rgba(0,0,0,.07);
+}
+
+/* ── Location input pair ─────────────────────────────────────── */
+.loc-pair { margin-bottom: 20px; }
+
+.loc-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  padding: 6px 0;
+}
+
+.loc-indicator {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding-top: 22px;
+  flex-shrink: 0;
+  width: 20px;
+}
+
+.loc-dot {
+  width: 13px; height: 13px; border-radius: 50%; flex-shrink: 0;
+  &--from { background: var(--rm-primary); box-shadow: 0 0 0 3px rgba(124,58,237,.2); }
+  &--to   { background: #dc2626; box-shadow: 0 0 0 3px rgba(220,38,38,.18); }
+}
+
+.loc-vline {
+  width: 2px; flex: 1; min-height: 24px;
+  background: linear-gradient(to bottom, var(--rm-primary-light), #fca5a5);
+  border-radius: 1px; margin-top: 4px;
+}
+
+.loc-body { flex: 1; min-width: 0; }
+
+/* Label row: PICKUP text + GPS button side by side */
+.loc-lbl-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 5px;
+}
+
+.loc-lbl {
+  font-size: 10px; font-weight: 800;
+  letter-spacing: 1.2px; color: var(--rm-text-muted);
+}
+
+/* GPS / current-location button */
+.gps-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 3px 10px;
+  background: #ede9fe;
+  color: var(--rm-primary);
+  border: 1.5px solid var(--rm-primary-light);
+  border-radius: 100px;
+  font-family: 'Plus Jakarta Sans', 'Inter', sans-serif;
+  font-size: 11px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background .15s, box-shadow .15s;
+  white-space: nowrap;
+
+  mat-icon  { font-size: 14px; width: 14px; height: 14px; }
+  .gps-spin { flex-shrink: 0; }
+
+  &:hover:not(:disabled) {
+    background: #ddd6fe;
+    box-shadow: 0 2px 8px rgba(124,58,237,.25);
+  }
+
+  &:disabled {
+    opacity: .6;
+    cursor: not-allowed;
+  }
+
+  &:focus { outline: none; }
+}
+
+/* Geolocation error line */
+.geo-error {
+  display: flex;
+  align-items: flex-start;
+  gap: 5px;
+  font-size: 12px;
+  color: #b91c1c;
+  margin: 5px 0 0;
+  line-height: 1.4;
+  mat-icon { font-size: 14px; width: 14px; height: 14px; flex-shrink: 0; margin-top: 1px; }
+}
+
+.loc-input-wrap {
+  display: flex; align-items: center;
+  border: 1.5px solid var(--rm-border);
+  border-radius: 10px;
+  background: #fafafa;
+  padding: 0 12px;
+  transition: border-color .2s, box-shadow .2s;
+  position: relative;
+
+  &--active, &:focus-within {
+    border-color: var(--rm-primary);
+    box-shadow: 0 0 0 3px rgba(124,58,237,.1);
+    background: #fff;
+  }
+}
+
+.loc-input {
+  flex: 1;
+  border: none;
+  background: transparent;
+  padding: 11px 8px;
+  font-size: 14px;
+  font-family: 'Plus Jakarta Sans', 'Inter', sans-serif;
+  color: var(--rm-text);
+  outline: none;
+  min-width: 0;
+
+  &::placeholder { color: var(--rm-text-muted); font-size: 13px; }
+}
+
+.loc-spin { flex-shrink: 0; }
+
+.loc-ok {
+  font-size: 18px; width: 18px; height: 18px; flex-shrink: 0;
+  color: #16a34a;
+}
+
+.loc-search-icon {
+  font-size: 18px; width: 18px; height: 18px; flex-shrink: 0;
+  color: var(--rm-text-muted);
+}
+
+/* Suggestions dropdown */
+.sug-list {
+  position: absolute;
+  top: calc(100% + 4px); left: 0; right: 0;
+  z-index: 2000;
+  background: #fff;
+  border: 1px solid var(--rm-border);
+  border-radius: 10px;
+  box-shadow: 0 8px 32px rgba(0,0,0,.14);
+  max-height: 220px; overflow-y: auto;
+}
+
+/* Need relative positioning on loc-body for absolute sug-list */
+.loc-body { position: relative; }
+
+.sug-item {
+  display: flex; align-items: flex-start; gap: 10px;
+  padding: 10px 14px; cursor: pointer;
+  font-size: 13px; color: var(--rm-text); line-height: 1.4;
+  transition: background .12s;
+
+  &:hover { background: #f5f3ff; }
+  mat-icon { font-size: 16px; width: 16px; height: 16px; color: var(--rm-primary); margin-top: 1px; flex-shrink: 0; }
+}
+
+/* ── Unified Route Map ───────────────────────────────────────── */
+.route-map-wrap {
+  position: relative;
+  border-radius: 14px;
+  overflow: hidden;
+  margin-bottom: 20px;
+  border: 1.5px solid var(--rm-border);
+  box-shadow: var(--rm-shadow-sm);
+}
+
+.route-map { height: 380px; width: 100%; }
+
+/* Floating hint pill inside the map */
+.map-hint-pill {
+  position: absolute;
+  bottom: 14px; left: 50%;
+  transform: translateX(-50%);
+  z-index: 500;
+  background: rgba(30,27,75,.72);
+  backdrop-filter: blur(6px);
+  color: #fff;
+  font-size: 12px; font-weight: 500;
+  padding: 6px 16px;
+  border-radius: 100px;
+  display: flex; align-items: center; gap: 6px;
+  white-space: nowrap;
+  pointer-events: none;
+  mat-icon { font-size: 14px; width: 14px; height: 14px; color: #fbbf24; }
+  strong { font-weight: 700; }
+}
+
+/* Map legend — top-right corner */
+.map-legend {
+  position: absolute;
+  top: 12px; right: 12px;
+  z-index: 500;
+  background: rgba(255,255,255,.92);
+  backdrop-filter: blur(4px);
+  border-radius: 10px;
+  padding: 8px 12px;
+  display: flex; flex-direction: column; gap: 5px;
+  box-shadow: 0 2px 8px rgba(0,0,0,.12);
+}
+
+.legend-item {
+  display: flex; align-items: center; gap: 6px;
+  font-size: 11px; font-weight: 600; color: var(--rm-text);
+
+  .legend-dot {
+    width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0;
+  }
+
+  &--from .legend-dot { background: var(--rm-primary); }
+  &--to   .legend-dot { background: #dc2626; }
+  &--ride .legend-dot { background: #16a34a; }
+}
+
+/* ── Filter strip ────────────────────────────────────────────── */
+.filter-strip {
+  display: flex; flex-wrap: wrap; gap: 10px;
+  align-items: center;
+  margin-bottom: 18px;
+  padding-top: 18px;
+  border-top: 1px solid var(--rm-border);
+}
+
+.ff         { flex: 2; min-width: 140px; }
+.ff--date   { flex: 2.5; min-width: 160px; }
+.ff--xs     { flex: 1; min-width: 88px; }
+
+.ff-toggle { display: flex; align-items: center; padding-bottom: 4px; }
+
+.female-icon { font-size: 16px; width: 16px; height: 16px; vertical-align: middle; }
+
+/* ── Search CTA ──────────────────────────────────────────────── */
+.search-cta {
+  width: 100%; height: 50px;
+  background: var(--rm-gradient-brand);
+  color: #fff; border: none; border-radius: 12px;
+  font-family: 'Plus Jakarta Sans', 'Inter', sans-serif;
+  font-size: 15px; font-weight: 700; letter-spacing: .3px;
+  cursor: pointer;
+  display: flex; align-items: center; justify-content: center; gap: 8px;
+  transition: transform .15s, box-shadow .15s;
+
+  mat-icon { font-size: 20px; width: 20px; height: 20px; }
+
+  ::ng-deep .mdc-circular-progress__indeterminate-circle-graphic { stroke: #fff !important; }
+
+  &:hover:not(:disabled) { transform: translateY(-2px); box-shadow: 0 10px 28px rgba(124,58,237,.42); }
+  &:active:not(:disabled) { transform: translateY(0); }
+  &:disabled { background: #d1d5db; cursor: not-allowed; box-shadow: none; }
+  &:focus { outline: none; }
+}
+
+.cta-spin { display: inline-block; }
+
+/* ── Results section ─────────────────────────────────────────── */
+.sr-results { flex: 1; padding: 36px 0 72px; }
+
+.results-inner { max-width: 860px; margin: 0 auto; padding: 0 20px; }
+
+.rh-bar {
+  display: flex; align-items: center; justify-content: space-between;
+  flex-wrap: wrap; gap: 10px; margin-bottom: 24px;
+}
+
+.rh-count {
+  display: flex; align-items: baseline; gap: 7px;
+  .rh-num  { font-size: 32px; font-weight: 800; color: var(--rm-primary); line-height: 1; }
+  .rh-text { font-size: 15px; font-weight: 500; color: var(--rm-text-muted); }
+}
+
+.rh-route {
+  display: flex; align-items: center; gap: 6px; font-size: 13px;
+  background: var(--rm-surface); border: 1px solid var(--rm-border);
+  border-radius: 100px; padding: 5px 12px;
+  mat-icon { font-size: 14px; width: 14px; height: 14px; flex-shrink: 0; color: var(--rm-text-muted); }
+
+  .rh-loc {
+    font-weight: 600; max-width: 130px;
+    overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+    &--from { color: var(--rm-primary-dark); }
+    &--to   { color: #b91c1c; }
+  }
+}
+
+/* ── Empty state ─────────────────────────────────────────────── */
+.empty-state {
+  text-align: center; padding: 64px 0;
+
+  .empty-blob {
+    width: 84px; height: 84px; border-radius: 50%;
+    background: #ede9fe; display: flex; align-items: center; justify-content: center;
+    margin: 0 auto 18px;
+    mat-icon { font-size: 42px; width: 42px; height: 42px; color: var(--rm-primary); }
+  }
+
+  h3 { font-size: 20px; font-weight: 700; margin-bottom: 8px; }
+  p  { font-size: 14px; color: var(--rm-text-muted); max-width: 280px; margin: 0 auto; }
+}
+
+/* ── Ride cards ──────────────────────────────────────────────── */
+.ride-list { display: flex; flex-direction: column; gap: 16px; }
+
+.ride-card {
+  background: var(--rm-surface); border-radius: 16px; padding: 20px 22px 16px;
+  cursor: pointer; position: relative;
+  border: 2px solid var(--rm-border);
+  box-shadow: var(--rm-shadow-sm);
+  transition: border-color .2s, box-shadow .25s, transform .2s;
+
+  &:hover {
+    border-color: var(--rm-primary);
+    box-shadow: 0 10px 36px rgba(124,58,237,.15);
+    transform: translateY(-3px);
+  }
+}
+
+.rc-price-badge {
+  position: absolute; top: 18px; right: 20px; text-align: right;
+  .rc-amount { display: block; font-size: 28px; font-weight: 800; color: var(--rm-primary); line-height: 1; }
+  .rc-unit   { display: block; font-size: 11px; color: var(--rm-text-muted); margin-top: 2px; }
+}
+
+.rc-driver { display: flex; align-items: center; gap: 12px; margin-bottom: 14px; padding-right: 84px; }
+
+.rc-avatar {
+  width: 48px; height: 48px; border-radius: 50%; object-fit: cover;
+  border: 2px solid var(--rm-border); flex-shrink: 0;
+  &--ph { background: #ede9fe; display: flex; align-items: center; justify-content: center;
+    mat-icon { font-size: 24px; width: 24px; height: 24px; color: var(--rm-primary); } }
+}
+
+.rc-driver-info { display: flex; flex-direction: column; gap: 3px; min-width: 0; }
+.rc-name { font-size: 15px; font-weight: 700; color: var(--rm-text); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.rc-rating {
+  display: flex; align-items: center; gap: 3px; font-size: 12px; font-weight: 600; color: #d97706;
+  .rc-star  { font-size: 14px; width: 14px; height: 14px; }
+  .rc-total { color: var(--rm-text-muted); font-weight: 400; }
+}
+
+.rc-route {
+  display: flex; align-items: center; gap: 10px;
+  background: var(--rm-bg); border-radius: 10px; padding: 12px 14px; margin-bottom: 12px;
+  border: 1px solid var(--rm-border);
+}
+
+.rc-rp   { display: flex; align-items: center; gap: 8px; flex: 1; min-width: 0; }
+.rc-rdot {
+  width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0;
+  &--from { background: var(--rm-primary); }
+  &--to   { background: #dc2626; }
+}
+.rc-raddr  { font-size: 13px; font-weight: 500; color: var(--rm-text); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.rc-rarrow { font-size: 16px; width: 16px; height: 16px; color: var(--rm-text-muted); flex-shrink: 0; }
+
+.rc-chips { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 14px; }
+.rc-chip {
+  display: inline-flex; align-items: center; gap: 4px;
+  padding: 4px 10px; border-radius: 100px; font-size: 12px; font-weight: 500;
+  mat-icon { font-size: 13px; width: 13px; height: 13px; }
+  &--time   { background: #ede9fe; color: #5b21b6; }
+  &--seats  { background: #dcfce7; color: #166534; }
+  &--women  { background: #fce7f3; color: #9d174d; }
+  &--parcel { background: #fef3c7; color: #92400e; }
+}
+
+.rc-footer { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.rc-vehicle {
+  display: flex; align-items: center; gap: 5px;
+  font-size: 12px; color: var(--rm-text-muted); overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+  mat-icon { font-size: 14px; width: 14px; height: 14px; flex-shrink: 0; }
+}
+.rc-cta {
+  display: inline-flex; align-items: center; gap: 5px;
+  padding: 9px 18px; background: var(--rm-gradient-brand);
+  color: #fff; border: none; border-radius: 9px;
+  font-family: 'Plus Jakarta Sans', 'Inter', sans-serif;
+  font-size: 13px; font-weight: 700; cursor: pointer; white-space: nowrap; flex-shrink: 0;
+  transition: transform .15s, box-shadow .15s;
+  mat-icon { font-size: 15px; width: 15px; height: 15px; }
+  &:hover { transform: translateY(-1px); box-shadow: 0 5px 16px rgba(124,58,237,.4); }
+  &:focus { outline: none; }
+}
+
+mat-paginator { margin-top: 24px; border-radius: 12px; background: var(--rm-surface) !important; }
+
+/* ── Responsive ──────────────────────────────────────────────── */
+@media (max-width: 680px) {
+  .sr-hero-band { padding: 24px 16px 84px; }
+  .hero-text h1 { font-size: 26px; }
+  .sr-card-wrap { padding: 0 12px; }
+  .sr-card      { padding: 18px 14px 16px; }
+  .route-map    { height: 280px; }
+  .filter-strip { gap: 8px; }
+  .rh-route     { display: none; }
+  .rc-price-badge .rc-amount { font-size: 22px; }
+}
+
+@media (max-width: 460px) {
+  .rc-footer { flex-direction: column; align-items: flex-start; }
+  .rc-cta    { width: 100%; justify-content: center; }
+}
+
+/* ── Dark mode overrides ─────────────────────────────────────────── */
+:host-context([data-theme="dark"]) {
+  .sr-card { box-shadow: 0 20px 64px rgba(0,0,0,.4), 0 4px 16px rgba(0,0,0,.3); }
+
+  .rc-avatar--ph { background: rgba(124,58,237,.2); }
+
+  .rc-chip {
+    &--time   { background: rgba(91,33,182,.2);  color: #c4b5fd; }
+    &--seats  { background: rgba(22,163,74,.15);  color: #86efac; }
+    &--women  { background: rgba(157,23,77,.15);  color: #f9a8d4; }
+    &--parcel { background: rgba(146,64,14,.15);  color: #fcd34d; }
+  }
+
+  .empty-blob { background: rgba(124,58,237,.2); }
+
+  /* Location input boxes */
+  .loc-input-wrap {
+    background: var(--rm-surface);
+    &--active, &:focus-within { background: rgba(255,255,255,.05); }
+  }
+
+  /* Suggestions dropdown */
+  .sug-list { background: var(--rm-surface); border-color: var(--rm-border); }
+  .sug-item:hover { background: rgba(124,58,237,.12); }
+
+  /* GPS button */
+  .gps-btn {
+    background: rgba(124,58,237,.15);
+    border-color: var(--rm-primary);
+    color: var(--rm-primary-light);
+    &:hover:not(:disabled) { background: rgba(124,58,237,.28); box-shadow: 0 2px 8px rgba(124,58,237,.3); }
+  }
+
+  /* Map legend overlay */
+  .map-legend {
+    background: rgba(15,14,26,.88);
+    .legend-item { color: var(--rm-text); }
+  }
+
+  /* Route bar: from-location text was dark violet, invisible on dark */
+  .rh-loc--from { color: var(--rm-primary-light); }
+}

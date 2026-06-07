@@ -1,0 +1,369 @@
+<!-- Dashboard Home -->
+<div class="dash-layout" [class.sidebar-open]="isMobileMenuOpen">
+
+  <!-- Mobile overlay -->
+  <div class="dash-overlay" (click)="closeMobileMenu()"></div>
+
+  <!-- ── Sidebar ─────────────────────────────────────────────── -->
+  <aside class="dash-sidebar">
+
+    <button class="sidebar-close-btn" (click)="closeMobileMenu()" aria-label="Close menu">
+      <mat-icon>close</mat-icon>
+    </button>
+
+    <div class="sidebar-brand">
+      <div class="brand-icon-wrap">
+        <mat-icon>directions_car</mat-icon>
+      </div>
+      <span>We'll Share</span>
+    </div>
+
+    <!-- Mode pill -->
+    <div class="mode-pill" [class.mode-pill--driver]="isDriver" [class.mode-pill--rider]="isRider">
+      <mat-icon>{{ isDriver ? 'drive_eta' : 'person_search' }}</mat-icon>
+      <span>{{ isDriver ? 'Driver Mode' : 'Rider Mode' }}</span>
+    </div>
+
+    <nav class="sidebar-nav">
+      <a class="nav-item" routerLink="/dashboard"
+         routerLinkActive="nav-item--active"
+         [routerLinkActiveOptions]="{exact:true}"
+         (click)="closeMobileMenu()">
+        <span class="nav-icon"><mat-icon>dashboard</mat-icon></span>
+        <span>Dashboard</span>
+      </a>
+
+      <!-- ── Rider nav ── -->
+      <ng-container *ngIf="isRider">
+        <a class="nav-item" routerLink="/rides/search" routerLinkActive="nav-item--active" (click)="closeMobileMenu()">
+          <span class="nav-icon"><mat-icon>search</mat-icon></span>
+          <span>Find a Ride</span>
+        </a>
+        <a class="nav-item" routerLink="/bookings/my" routerLinkActive="nav-item--active" (click)="closeMobileMenu()">
+          <span class="nav-icon"><mat-icon>confirmation_number</mat-icon></span>
+          <span>My Bookings</span>
+          <span *ngIf="unreadMessages > 0" class="nav-badge">{{ unreadMessages }}</span>
+        </a>
+        <a class="nav-item" routerLink="/parcels/post" routerLinkActive="nav-item--active" (click)="closeMobileMenu()">
+          <span class="nav-icon"><mat-icon>inventory_2</mat-icon></span>
+          <span>Send Parcel</span>
+        </a>
+        <a class="nav-item" routerLink="/parcels/my" routerLinkActive="nav-item--active" (click)="closeMobileMenu()">
+          <span class="nav-icon"><mat-icon>local_shipping</mat-icon></span>
+          <span>My Parcels</span>
+        </a>
+      </ng-container>
+
+      <!-- ── Driver nav ── -->
+      <ng-container *ngIf="isDriver">
+        <a class="nav-item" routerLink="/rides/post" routerLinkActive="nav-item--active" (click)="closeMobileMenu()">
+          <span class="nav-icon"><mat-icon>add_road</mat-icon></span>
+          <span>Post a Ride</span>
+        </a>
+        <a class="nav-item" routerLink="/bookings/driver" routerLinkActive="nav-item--active" (click)="closeMobileMenu()">
+          <span class="nav-icon"><mat-icon>manage_accounts</mat-icon></span>
+          <span>Manage Bookings</span>
+          <span *ngIf="pendingBookings > 0" class="nav-badge">{{ pendingBookings }}</span>
+        </a>
+        <a class="nav-item" routerLink="/parcels/driver" routerLinkActive="nav-item--active" (click)="closeMobileMenu()">
+          <span class="nav-icon"><mat-icon>local_shipping</mat-icon></span>
+          <span>Parcel Requests</span>
+          <span *ngIf="pendingParcels > 0" class="nav-badge">{{ pendingParcels }}</span>
+        </a>
+      </ng-container>
+
+      <!-- Common -->
+      <a class="nav-item" routerLink="/history" routerLinkActive="nav-item--active" (click)="closeMobileMenu()">
+        <span class="nav-icon"><mat-icon>history</mat-icon></span>
+        <span>History</span>
+      </a>
+    </nav>
+
+    <div class="sidebar-footer">
+      <a class="nav-item" routerLink="/profile" routerLinkActive="nav-item--active" (click)="closeMobileMenu()">
+        <span class="nav-icon"><mat-icon>account_circle</mat-icon></span>
+        <span>Profile</span>
+      </a>
+      <button class="nav-item nav-item--switch" (click)="switchMode()">
+        <span class="nav-icon"><mat-icon>swap_horiz</mat-icon></span>
+        <span>Switch to {{ isDriver ? 'Rider' : 'Driver' }}</span>
+      </button>
+      <button class="nav-item nav-item--logout" (click)="logout()">
+        <span class="nav-icon"><mat-icon>logout</mat-icon></span>
+        <span>Sign Out</span>
+      </button>
+    </div>
+  </aside>
+
+  <!-- ── Main content ────────────────────────────────────────── -->
+  <main class="dash-main">
+
+    <!-- Top bar -->
+    <header class="dash-topbar">
+      <button class="hamburger-btn" (click)="toggleMobileMenu()" aria-label="Open menu">
+        <mat-icon>menu</mat-icon>
+      </button>
+      <div class="topbar-greeting">
+        <h2>Hello, {{ firstName }} 👋</h2>
+        <p>{{ today | date:'EEEE, d MMMM yyyy' }}</p>
+      </div>
+      <div class="topbar-actions">
+        <button class="mode-switch-btn" (click)="switchMode()" matTooltip="Switch mode">
+          <mat-icon>{{ isDriver ? 'drive_eta' : 'person_search' }}</mat-icon>
+          <span class="mode-label">{{ isDriver ? 'Driver' : 'Rider' }}</span>
+          <mat-icon class="swap-icon">swap_horiz</mat-icon>
+        </button>
+        <a mat-icon-button routerLink="/bookings/my" matTooltip="Messages">
+          <mat-icon [matBadge]="unreadMessages > 0 ? unreadMessages : null"
+                    matBadgeColor="warn" matBadgeSize="small">chat_bubble_outline</mat-icon>
+        </a>
+        <a mat-icon-button routerLink="/profile" matTooltip="Profile">
+          <mat-icon>account_circle</mat-icon>
+        </a>
+        <button mat-icon-button (click)="logout()" matTooltip="Sign out">
+          <mat-icon>logout</mat-icon>
+        </button>
+      </div>
+    </header>
+
+    <!-- Notices -->
+    <div *ngIf="session?.status === 'PENDING_VERIFICATION'" class="notice notice--warning">
+      <mat-icon>hourglass_top</mat-icon>
+      <span>Your account is <strong>pending admin verification</strong>. Upload your Aadhaar from your
+        <a routerLink="/profile">profile</a> to speed things up.</span>
+    </div>
+    <div *ngIf="session?.status === 'REJECTED'" class="notice notice--error">
+      <mat-icon>cancel</mat-icon>
+      <span>Your account was <strong>rejected</strong>. Please contact support.</span>
+    </div>
+    <div *ngIf="!session?.phoneVerified" class="notice notice--info">
+      <mat-icon>phone_android</mat-icon>
+      <span>Phone not verified. <a routerLink="/auth/verify-phone">Verify now →</a></span>
+    </div>
+
+    <!-- ── RIDER view ─────────────────────────────────────────── -->
+    <ng-container *ngIf="isRider">
+
+      <div class="stats-row">
+        <div class="stat-card stat-card--violet">
+          <div class="stat-icon"><mat-icon>verified_user</mat-icon></div>
+          <div class="stat-info">
+            <span class="stat-label">Account Status</span>
+            <span class="stat-value">{{ session?.status | titlecase }}</span>
+          </div>
+        </div>
+        <div class="stat-card stat-card--indigo">
+          <div class="stat-icon"><mat-icon>confirmation_number</mat-icon></div>
+          <div class="stat-info">
+            <span class="stat-label">My Bookings</span>
+            <span class="stat-value">{{ pendingBookings }}</span>
+          </div>
+        </div>
+        <div class="stat-card stat-card--amber">
+          <div class="stat-icon"><mat-icon>inventory_2</mat-icon></div>
+          <div class="stat-info">
+            <span class="stat-label">My Parcels</span>
+            <span class="stat-value">{{ pendingParcels }}</span>
+          </div>
+        </div>
+        <div class="stat-card stat-card--teal">
+          <div class="stat-icon"><mat-icon>chat_bubble_outline</mat-icon></div>
+          <div class="stat-info">
+            <span class="stat-label">Unread Messages</span>
+            <span class="stat-value">{{ unreadMessages }}</span>
+          </div>
+        </div>
+      </div>
+
+      <h3 class="section-title">What do you need?</h3>
+      <div class="feature-grid">
+
+        <a class="feat-card feat-card--violet"
+           [class.feat-card--locked]="session?.status !== 'VERIFIED'"
+           [routerLink]="session?.status === 'VERIFIED' ? '/rides/search' : null">
+          <div class="feat-icon"><mat-icon>search</mat-icon></div>
+          <div class="feat-body">
+            <h4>Find a Ride</h4>
+            <p>Search available rides by route &amp; date</p>
+          </div>
+          <mat-icon class="feat-arrow">arrow_forward</mat-icon>
+        </a>
+
+        <a class="feat-card feat-card--indigo"
+           [class.feat-card--locked]="session?.status !== 'VERIFIED'"
+           [routerLink]="session?.status === 'VERIFIED' ? '/bookings/my' : null">
+          <div class="feat-icon"><mat-icon>confirmation_number</mat-icon></div>
+          <div class="feat-body">
+            <h4>My Bookings</h4>
+            <p>Track your booked rides &amp; OTP status</p>
+          </div>
+          <mat-icon class="feat-arrow">arrow_forward</mat-icon>
+        </a>
+
+        <a class="feat-card feat-card--amber"
+           [class.feat-card--locked]="session?.status !== 'VERIFIED'"
+           [routerLink]="session?.status === 'VERIFIED' ? '/parcels/post' : null">
+          <div class="feat-icon"><mat-icon>inventory_2</mat-icon></div>
+          <div class="feat-body">
+            <h4>Send a Parcel</h4>
+            <p>Ship items with any matching driver</p>
+          </div>
+          <mat-icon class="feat-arrow">arrow_forward</mat-icon>
+        </a>
+
+        <a class="feat-card feat-card--teal"
+           [class.feat-card--locked]="session?.status !== 'VERIFIED'"
+           [routerLink]="session?.status === 'VERIFIED' ? '/parcels/my' : null">
+          <div class="feat-icon"><mat-icon>local_shipping</mat-icon></div>
+          <div class="feat-body">
+            <h4>My Parcels</h4>
+            <p>Track parcels you've sent</p>
+          </div>
+          <mat-icon class="feat-arrow">arrow_forward</mat-icon>
+        </a>
+
+        <a class="feat-card feat-card--rose"
+           [class.feat-card--locked]="session?.status !== 'VERIFIED'"
+           [routerLink]="session?.status === 'VERIFIED' ? '/bookings/my' : null">
+          <div class="feat-icon">
+            <mat-icon>chat_bubble</mat-icon>
+            <span *ngIf="unreadMessages > 0" class="feat-badge">{{ unreadMessages }}</span>
+          </div>
+          <div class="feat-body">
+            <h4>Messages</h4>
+            <p>Chat with your driver</p>
+          </div>
+          <mat-icon class="feat-arrow">arrow_forward</mat-icon>
+        </a>
+
+        <a class="feat-card feat-card--slate"
+           [class.feat-card--locked]="session?.status !== 'VERIFIED'"
+           [routerLink]="session?.status === 'VERIFIED' ? '/history' : null">
+          <div class="feat-icon"><mat-icon>history</mat-icon></div>
+          <div class="feat-body">
+            <h4>My History</h4>
+            <p>View past rides &amp; deliveries</p>
+          </div>
+          <mat-icon class="feat-arrow">arrow_forward</mat-icon>
+        </a>
+
+      </div>
+    </ng-container>
+
+    <!-- ── DRIVER view ────────────────────────────────────────── -->
+    <ng-container *ngIf="isDriver">
+
+      <div class="stats-row">
+        <div class="stat-card stat-card--violet">
+          <div class="stat-icon"><mat-icon>verified_user</mat-icon></div>
+          <div class="stat-info">
+            <span class="stat-label">Account Status</span>
+            <span class="stat-value">{{ session?.status | titlecase }}</span>
+          </div>
+        </div>
+        <div class="stat-card stat-card--indigo">
+          <div class="stat-icon"><mat-icon>manage_accounts</mat-icon></div>
+          <div class="stat-info">
+            <span class="stat-label">Pending Bookings</span>
+            <span class="stat-value">{{ pendingBookings }}</span>
+          </div>
+        </div>
+        <div class="stat-card stat-card--amber">
+          <div class="stat-icon"><mat-icon>local_shipping</mat-icon></div>
+          <div class="stat-info">
+            <span class="stat-label">Parcel Requests</span>
+            <span class="stat-value">{{ pendingParcels }}</span>
+          </div>
+        </div>
+        <div class="stat-card stat-card--teal">
+          <div class="stat-icon"><mat-icon>chat_bubble_outline</mat-icon></div>
+          <div class="stat-info">
+            <span class="stat-label">Unread Messages</span>
+            <span class="stat-value">{{ unreadMessages }}</span>
+          </div>
+        </div>
+      </div>
+
+      <h3 class="section-title">Driver Actions</h3>
+      <div class="feature-grid">
+
+        <a class="feat-card feat-card--indigo"
+           [class.feat-card--locked]="session?.status !== 'VERIFIED'"
+           [routerLink]="session?.status === 'VERIFIED' ? '/rides/post' : null">
+          <div class="feat-icon"><mat-icon>add_road</mat-icon></div>
+          <div class="feat-body">
+            <h4>Post a Ride</h4>
+            <p>Offer seats on your upcoming trip</p>
+          </div>
+          <mat-icon class="feat-arrow">arrow_forward</mat-icon>
+        </a>
+
+        <a class="feat-card feat-card--green"
+           [class.feat-card--locked]="session?.status !== 'VERIFIED'"
+           [routerLink]="session?.status === 'VERIFIED' ? '/bookings/driver' : null">
+          <div class="feat-icon">
+            <mat-icon>manage_accounts</mat-icon>
+            <span *ngIf="pendingBookings > 0" class="feat-badge">{{ pendingBookings }}</span>
+          </div>
+          <div class="feat-body">
+            <h4>Manage Bookings</h4>
+            <p>Approve or reject passenger requests</p>
+          </div>
+          <mat-icon class="feat-arrow">arrow_forward</mat-icon>
+        </a>
+
+        <a class="feat-card feat-card--teal"
+           [class.feat-card--locked]="session?.status !== 'VERIFIED'"
+           [routerLink]="session?.status === 'VERIFIED' ? '/parcels/driver' : null">
+          <div class="feat-icon">
+            <mat-icon>local_shipping</mat-icon>
+            <span *ngIf="pendingParcels > 0" class="feat-badge">{{ pendingParcels }}</span>
+          </div>
+          <div class="feat-body">
+            <h4>Parcel Requests</h4>
+            <p>Pick up &amp; deliver parcels on your route</p>
+          </div>
+          <mat-icon class="feat-arrow">arrow_forward</mat-icon>
+        </a>
+
+        <a class="feat-card feat-card--rose"
+           [class.feat-card--locked]="session?.status !== 'VERIFIED'"
+           [routerLink]="session?.status === 'VERIFIED' ? '/bookings/driver' : null">
+          <div class="feat-icon">
+            <mat-icon>chat_bubble</mat-icon>
+            <span *ngIf="unreadMessages > 0" class="feat-badge">{{ unreadMessages }}</span>
+          </div>
+          <div class="feat-body">
+            <h4>Messages</h4>
+            <p>Chat with your passengers</p>
+          </div>
+          <mat-icon class="feat-arrow">arrow_forward</mat-icon>
+        </a>
+
+        <a class="feat-card feat-card--violet"
+           [class.feat-card--locked]="session?.status !== 'VERIFIED'"
+           [routerLink]="session?.status === 'VERIFIED' ? '/profile' : null">
+          <div class="feat-icon"><mat-icon>directions_car</mat-icon></div>
+          <div class="feat-body">
+            <h4>My Vehicles</h4>
+            <p>Add or update your vehicle details</p>
+          </div>
+          <mat-icon class="feat-arrow">arrow_forward</mat-icon>
+        </a>
+
+        <a class="feat-card feat-card--slate"
+           [class.feat-card--locked]="session?.status !== 'VERIFIED'"
+           [routerLink]="session?.status === 'VERIFIED' ? '/history' : null">
+          <div class="feat-icon"><mat-icon>history</mat-icon></div>
+          <div class="feat-body">
+            <h4>Trip History</h4>
+            <p>View all past rides &amp; earnings</p>
+          </div>
+          <mat-icon class="feat-arrow">arrow_forward</mat-icon>
+        </a>
+
+      </div>
+    </ng-container>
+
+  </main>
+</div>

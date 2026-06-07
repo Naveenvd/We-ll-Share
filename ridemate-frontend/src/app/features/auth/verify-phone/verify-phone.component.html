@@ -1,0 +1,61 @@
+<!-- Verify Phone Page -->
+<div class="auth-container">
+  <mat-card class="auth-card">
+
+    <div class="brand">
+      <mat-icon class="brand-icon verified-icon">phone_android</mat-icon>
+      <h1>Verify Your Phone</h1>
+      <p class="brand-sub">
+        A 6-digit OTP was sent to your registered mobile number.<br>
+        <em>(Check the Spring Boot console — SMS is mocked in dev)</em>
+      </p>
+    </div>
+
+    <mat-card-content>
+
+      <!-- Error banner -->
+      <div *ngIf="errorMessage" class="error-banner">
+        <mat-icon>error_outline</mat-icon>
+        {{ errorMessage }}
+      </div>
+
+      <form [formGroup]="form" (ngSubmit)="submit()" novalidate>
+
+        <!-- OTP input -->
+        <mat-form-field appearance="outline" class="full-width otp-field">
+          <mat-label>Enter 6-digit OTP</mat-label>
+          <input matInput formControlName="otp" type="text"
+                 inputmode="numeric" maxlength="6"
+                 placeholder="_ _ _ _ _ _" />
+          <mat-icon matSuffix>lock</mat-icon>
+          <mat-error *ngIf="form.get('otp')?.hasError('required')">OTP is required</mat-error>
+          <mat-error *ngIf="form.get('otp')?.hasError('pattern')">Must be exactly 6 digits</mat-error>
+        </mat-form-field>
+
+        <!-- Verify button -->
+        <button mat-raised-button color="primary" type="submit"
+                class="full-width submit-btn" [disabled]="loading">
+          <mat-spinner *ngIf="loading" diameter="20" class="inline-spinner"></mat-spinner>
+          <span *ngIf="!loading">Verify OTP</span>
+        </button>
+
+      </form>
+
+      <!-- Resend -->
+      <div class="resend-section">
+        <span *ngIf="resendCountdown > 0" class="resend-timer">
+          Resend OTP in {{ resendCountdown }}s
+        </span>
+        <button *ngIf="resendCountdown === 0"
+                mat-stroked-button color="accent"
+                class="full-width"
+                [disabled]="resending"
+                (click)="resend()">
+          <mat-spinner *ngIf="resending" diameter="18" class="inline-spinner"></mat-spinner>
+          <span *ngIf="!resending">Resend OTP</span>
+        </button>
+      </div>
+
+    </mat-card-content>
+  </mat-card>
+</div>

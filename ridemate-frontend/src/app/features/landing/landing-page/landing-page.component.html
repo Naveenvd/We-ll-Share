@@ -1,0 +1,598 @@
+<!-- We'll Share — Landing Page v2 -->
+<div class="lp-root">
+
+  <!-- ══════════════════════════ NAV ══════════════════════════════ -->
+  <nav class="lp-nav">
+    <div class="lp-nav-brand">
+      <div class="lp-nav-logo"><mat-icon>directions_car</mat-icon></div>
+      <span>We'll Share</span>
+    </div>
+    <div class="lp-nav-links">
+      <a href="#features">Features</a>
+      <a href="#how-it-works">How It Works</a>
+      <a href="#roles">For You</a>
+    </div>
+    <div class="lp-nav-ctas">
+      <a routerLink="/auth/login" class="lp-nav-signin">Sign In</a>
+      <a routerLink="/auth/signup" class="lp-nav-getstarted">
+        Get Started <mat-icon>arrow_forward</mat-icon>
+      </a>
+    </div>
+    <!-- Mobile menu button -->
+    <button class="lp-nav-mobile-btn" aria-label="menu">
+      <mat-icon>menu</mat-icon>
+    </button>
+  </nav>
+
+  <!-- ══════════════════════════ HERO ══════════════════════════════ -->
+  <section class="lp-hero">
+    <!-- Decorative background blobs -->
+    <div class="lp-hero-bg" aria-hidden="true">
+      <span class="lp-blob lp-blob--1"></span>
+      <span class="lp-blob lp-blob--2"></span>
+      <span class="lp-blob lp-blob--3"></span>
+      <div class="lp-grid-dots"></div>
+    </div>
+
+    <div class="lp-hero-inner">
+      <!-- Left: text content -->
+      <div class="lp-hero-text">
+        <div class="lp-hero-pill">
+          <span class="lp-pill-pulse"></span>
+          <mat-icon>rocket_launch</mat-icon>
+          Now live in 200+ cities across India
+        </div>
+
+        <h1 class="lp-hero-h1">
+          Share the Ride.<br>
+          <span class="lp-text-gradient">Share the Cost.</span><br>
+          Share the Planet.
+        </h1>
+
+        <p class="lp-hero-desc">
+          India's smartest carpooling &amp; parcel platform.
+          Connect with verified co-passengers, ship parcels
+          with passing drivers, and make every journey count.
+        </p>
+
+        <div class="lp-hero-btns">
+          <a routerLink="/auth/signup" class="lp-btn-primary">
+            Create Free Account <mat-icon>arrow_forward</mat-icon>
+          </a>
+          <a routerLink="/auth/login" class="lp-btn-outline">
+            <mat-icon>login</mat-icon> Sign In
+          </a>
+        </div>
+
+        <!-- Avatar stack + social proof -->
+        <div class="lp-hero-social">
+          <div class="lp-avatars">
+            <div class="lp-av" style="background:#7c3aed">R</div>
+            <div class="lp-av" style="background:#2563eb">S</div>
+            <div class="lp-av" style="background:#0d9488">A</div>
+            <div class="lp-av" style="background:#d97706">M</div>
+            <div class="lp-av lp-av--more">+12K</div>
+          </div>
+          <div class="lp-hero-social-text">
+            <div class="lp-hero-stars">★★★★★</div>
+            <span>Trusted by <strong>12,000+</strong> commuters</span>
+          </div>
+        </div>
+
+        <!-- Trust row -->
+        <div class="lp-trust-row">
+          <span><mat-icon>verified_user</mat-icon> ID Verified</span>
+          <span><mat-icon>lock</mat-icon> 100% Secure</span>
+          <span><mat-icon>card_giftcard</mat-icon> Free to Join</span>
+        </div>
+      </div>
+
+      <!-- Right: Phone mockup -->
+      <div class="lp-hero-phone" aria-hidden="true">
+        <!-- Decorative ring behind phone -->
+        <div class="lp-phone-glow"></div>
+
+        <div class="lp-phone">
+          <div class="lp-phone-island"></div>
+          <div class="lp-phone-content">
+
+            <!-- Status bar -->
+            <div class="lp-ps-bar">
+              <span>9:41</span>
+              <div class="lp-ps-icons">
+                <mat-icon>signal_cellular_alt</mat-icon>
+                <mat-icon>battery_full</mat-icon>
+              </div>
+            </div>
+
+            <!-- App greeting row -->
+            <div class="lp-app-top">
+              <div>
+                <p class="lp-app-hi">Good morning 👋</p>
+                <p class="lp-app-user">Arjun</p>
+              </div>
+              <div class="lp-app-av">A</div>
+            </div>
+
+            <!-- Search bar simulation -->
+            <div class="lp-app-searchbar">
+              <mat-icon>search</mat-icon>
+              <span>Where are you going?</span>
+            </div>
+
+            <!-- Ride card -->
+            <div class="lp-app-ridecard">
+              <div class="lp-rc-top">
+                <div class="lp-rc-badge">2 seats</div>
+                <span class="lp-rc-price">₹120</span>
+              </div>
+              <div class="lp-rc-route">
+                <div class="lp-rc-stop">
+                  <span class="lp-rc-dot lp-rc-dot--from"></span>
+                  <span>Hadapsar</span>
+                </div>
+                <div class="lp-rc-dashes"></div>
+                <div class="lp-rc-stop">
+                  <span class="lp-rc-dot lp-rc-dot--to"></span>
+                  <span>Hinjewadi</span>
+                </div>
+              </div>
+              <div class="lp-rc-meta">
+                <span><mat-icon>schedule</mat-icon>8:30 AM</span>
+                <span><mat-icon>star</mat-icon>4.9</span>
+                <span><mat-icon>directions_car</mat-icon>Swift</span>
+              </div>
+              <div class="lp-rc-btn">Book Seat</div>
+            </div>
+
+            <!-- Parcel success mini card -->
+            <div class="lp-app-mini">
+              <div class="lp-mini-icon"><mat-icon>check_circle</mat-icon></div>
+              <div>
+                <p>Parcel Delivered! 🎉</p>
+                <small>Pune → Mumbai · 2 hrs early</small>
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+        <!-- Floating badges -->
+        <div class="lp-fbadge lp-fbadge--save">
+          <div class="lp-fbadge-icon"><mat-icon>savings</mat-icon></div>
+          <div>
+            <strong>₹2,400 saved</strong>
+            <small>this month</small>
+          </div>
+        </div>
+
+        <div class="lp-fbadge lp-fbadge--star">
+          <div class="lp-fbadge-stars">★★★★★</div>
+          <div>
+            <strong>4.9 rating</strong>
+            <small>Verified driver</small>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Hero stats strip -->
+    <div class="lp-hero-stats">
+      <div class="lp-hstat"><span class="lp-hstat-n">50K+</span><span class="lp-hstat-l">Rides Shared</span></div>
+      <div class="lp-hstat-sep"></div>
+      <div class="lp-hstat"><span class="lp-hstat-n">12K+</span><span class="lp-hstat-l">Happy Users</span></div>
+      <div class="lp-hstat-sep"></div>
+      <div class="lp-hstat"><span class="lp-hstat-n">200+</span><span class="lp-hstat-l">Cities</span></div>
+      <div class="lp-hstat-sep"></div>
+      <div class="lp-hstat"><span class="lp-hstat-n">4.8★</span><span class="lp-hstat-l">Avg Rating</span></div>
+      <div class="lp-hstat-sep"></div>
+      <div class="lp-hstat"><span class="lp-hstat-n">40%</span><span class="lp-hstat-l">Cost Saving</span></div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════ CITY MARQUEE ═════════════════════════ -->
+  <div class="lp-marquee-wrap">
+    <span class="lp-marquee-label"><mat-icon>location_on</mat-icon> Available across India</span>
+    <div class="lp-marquee">
+      <div class="lp-marquee-track">
+        <span>Mumbai</span><span class="lp-mdot">·</span>
+        <span>Pune</span><span class="lp-mdot">·</span>
+        <span>Delhi</span><span class="lp-mdot">·</span>
+        <span>Bangalore</span><span class="lp-mdot">·</span>
+        <span>Hyderabad</span><span class="lp-mdot">·</span>
+        <span>Chennai</span><span class="lp-mdot">·</span>
+        <span>Kolkata</span><span class="lp-mdot">·</span>
+        <span>Ahmedabad</span><span class="lp-mdot">·</span>
+        <span>Surat</span><span class="lp-mdot">·</span>
+        <span>Jaipur</span><span class="lp-mdot">·</span>
+        <span>Nagpur</span><span class="lp-mdot">·</span>
+        <span>Kochi</span><span class="lp-mdot">·</span>
+        <span>Indore</span><span class="lp-mdot">·</span>
+        <!-- Duplicate for seamless loop -->
+        <span>Mumbai</span><span class="lp-mdot">·</span>
+        <span>Pune</span><span class="lp-mdot">·</span>
+        <span>Delhi</span><span class="lp-mdot">·</span>
+        <span>Bangalore</span><span class="lp-mdot">·</span>
+        <span>Hyderabad</span><span class="lp-mdot">·</span>
+        <span>Chennai</span><span class="lp-mdot">·</span>
+        <span>Kolkata</span><span class="lp-mdot">·</span>
+        <span>Ahmedabad</span><span class="lp-mdot">·</span>
+        <span>Surat</span><span class="lp-mdot">·</span>
+        <span>Jaipur</span><span class="lp-mdot">·</span>
+        <span>Nagpur</span><span class="lp-mdot">·</span>
+        <span>Kochi</span><span class="lp-mdot">·</span>
+        <span>Indore</span><span class="lp-mdot">·</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════ HOW IT WORKS ══════════════════════════ -->
+  <section class="lp-how" id="how-it-works">
+    <div class="lp-container">
+      <div class="lp-section-head">
+        <span class="lp-tag">Simple &amp; Fast</span>
+        <h2>Three Steps to Smarter Commuting</h2>
+        <p>Start saving on your commute in under 5 minutes</p>
+      </div>
+
+      <div class="lp-how-steps">
+
+        <div class="lp-how-step">
+          <div class="lp-how-num">
+            <span>01</span>
+            <div class="lp-how-line"></div>
+          </div>
+          <div class="lp-how-card">
+            <div class="lp-how-icon lp-how-icon--violet"><mat-icon>person_add</mat-icon></div>
+            <h3>Sign Up &amp; Get Verified</h3>
+            <p>Create your free account in 2 minutes. Upload your Aadhaar — our team verifies every member before they can book or post rides.</p>
+            <div class="lp-how-badge">
+              <mat-icon>shield</mat-icon> Takes only 2 min
+            </div>
+          </div>
+        </div>
+
+        <div class="lp-how-step">
+          <div class="lp-how-num">
+            <span>02</span>
+            <div class="lp-how-line"></div>
+          </div>
+          <div class="lp-how-card">
+            <div class="lp-how-icon lp-how-icon--blue"><mat-icon>route</mat-icon></div>
+            <h3>Find or Post a Ride</h3>
+            <p>Search for rides matching your route and time, or post your own trip and let co-passengers find you. Send parcels too!</p>
+            <div class="lp-how-badge">
+              <mat-icon>search</mat-icon> 50K+ rides available
+            </div>
+          </div>
+        </div>
+
+        <div class="lp-how-step">
+          <div class="lp-how-num">
+            <span>03</span>
+          </div>
+          <div class="lp-how-card">
+            <div class="lp-how-icon lp-how-icon--teal"><mat-icon>celebration</mat-icon></div>
+            <h3>Share, Save &amp; Earn</h3>
+            <p>Travel together with verified co-passengers, split the cost, earn from every seat you offer, and reduce your carbon footprint.</p>
+            <div class="lp-how-badge">
+              <mat-icon>savings</mat-icon> Save up to 70%
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════ FEATURES BENTO ═══════════════════════ -->
+  <section class="lp-features" id="features">
+    <div class="lp-container">
+      <div class="lp-section-head">
+        <span class="lp-tag">Full-Featured Platform</span>
+        <h2>Everything You Need to Commute Smarter</h2>
+        <p>Rides, parcels, safety, and community — all in one place</p>
+      </div>
+
+      <div class="lp-bento">
+
+        <!-- Large card: Find Rides -->
+        <div class="lp-bc lp-bc--large lp-bc--indigo">
+          <div class="lp-bc-icon-wrap"><mat-icon>search</mat-icon></div>
+          <div class="lp-bc-text">
+            <h3>Find Rides Instantly</h3>
+            <p>Search available rides by route, date, and time. Filter by women-only, AC, luggage space, and number of seats to find your perfect match.</p>
+          </div>
+          <div class="lp-bc-deco"><mat-icon>directions_car</mat-icon></div>
+          <div class="lp-bc-tags">
+            <span>Route search</span>
+            <span>Date filter</span>
+            <span>Real-time</span>
+          </div>
+        </div>
+
+        <!-- Medium card: Post Rides -->
+        <div class="lp-bc lp-bc--med lp-bc--violet">
+          <div class="lp-bc-icon-wrap"><mat-icon>add_road</mat-icon></div>
+          <h3>Post &amp; Earn</h3>
+          <p>Turn empty seats on your daily commute into steady income. Set your price and approve passengers.</p>
+          <div class="lp-bc-earn">
+            <span class="lp-bc-earn-num">₹4,000+</span>
+            <small>avg. monthly earnings</small>
+          </div>
+        </div>
+
+        <!-- Small card: Parcel -->
+        <div class="lp-bc lp-bc--sm lp-bc--orange">
+          <div class="lp-bc-icon-wrap"><mat-icon>inventory_2</mat-icon></div>
+          <h3>Parcel Delivery</h3>
+          <p>Ship items with verified drivers heading in the right direction.</p>
+        </div>
+
+        <!-- Small card: Women-only -->
+        <div class="lp-bc lp-bc--sm lp-bc--rose">
+          <div class="lp-bc-icon-wrap"><mat-icon>female</mat-icon></div>
+          <h3>Women-Only Mode</h3>
+          <p>Dedicated filter for safe, women-only rides.</p>
+        </div>
+
+        <!-- Small card: Verified -->
+        <div class="lp-bc lp-bc--sm lp-bc--teal">
+          <div class="lp-bc-icon-wrap"><mat-icon>verified_user</mat-icon></div>
+          <h3>ID Verified Users</h3>
+          <p>Every member is Aadhaar-verified before going live.</p>
+        </div>
+
+        <!-- Small card: SOS -->
+        <div class="lp-bc lp-bc--sm lp-bc--red">
+          <div class="lp-bc-icon-wrap"><mat-icon>emergency</mat-icon></div>
+          <h3>SOS Safety</h3>
+          <p>One-tap emergency button sends your live GPS to trusted contacts.</p>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════ RIDER vs DRIVER ═══════════════════════ -->
+  <section class="lp-roles" id="roles">
+    <div class="lp-container">
+      <div class="lp-section-head">
+        <span class="lp-tag">Choose Your Role</span>
+        <h2>One App, Two Ways to Win</h2>
+        <p>Switch between rider and driver mode anytime from your dashboard</p>
+      </div>
+
+      <div class="lp-roles-grid">
+
+        <!-- Rider card -->
+        <div class="lp-role-card lp-role-card--rider">
+          <div class="lp-role-header">
+            <div class="lp-role-icon lp-role-icon--rider">
+              <mat-icon>person_search</mat-icon>
+            </div>
+            <div class="lp-role-title">
+              <h3>For Riders</h3>
+              <p>Save up to 70% on your daily commute</p>
+            </div>
+            <div class="lp-role-metric lp-role-metric--save">
+              <span>₹2,400</span>
+              <small>avg. monthly saving</small>
+            </div>
+          </div>
+          <ul class="lp-role-list">
+            <li><mat-icon>check_circle</mat-icon> Find rides along your exact route</li>
+            <li><mat-icon>check_circle</mat-icon> Real-time OTP pickup verification</li>
+            <li><mat-icon>check_circle</mat-icon> Live GPS tracking during your trip</li>
+            <li><mat-icon>check_circle</mat-icon> Send parcels with any passing driver</li>
+            <li><mat-icon>check_circle</mat-icon> Women-only filter for safer travel</li>
+          </ul>
+          <a routerLink="/auth/signup" class="lp-role-cta lp-role-cta--rider">
+            Start as Rider <mat-icon>arrow_forward</mat-icon>
+          </a>
+        </div>
+
+        <!-- VS divider -->
+        <div class="lp-roles-vs">
+          <div class="lp-vs-pill">OR</div>
+        </div>
+
+        <!-- Driver card -->
+        <div class="lp-role-card lp-role-card--driver">
+          <div class="lp-role-header">
+            <div class="lp-role-icon lp-role-icon--driver">
+              <mat-icon>drive_eta</mat-icon>
+            </div>
+            <div class="lp-role-title">
+              <h3>For Drivers</h3>
+              <p>Turn your commute into earnings</p>
+            </div>
+            <div class="lp-role-metric lp-role-metric--earn">
+              <span>₹4,000+</span>
+              <small>avg. monthly earning</small>
+            </div>
+          </div>
+          <ul class="lp-role-list">
+            <li><mat-icon>check_circle</mat-icon> Post your trip in under 2 minutes</li>
+            <li><mat-icon>check_circle</mat-icon> Accept or reject booking requests</li>
+            <li><mat-icon>check_circle</mat-icon> Deliver parcels along your route</li>
+            <li><mat-icon>check_circle</mat-icon> Manage bookings from one dashboard</li>
+            <li><mat-icon>check_circle</mat-icon> Earn on every seat &amp; every parcel</li>
+          </ul>
+          <a routerLink="/auth/signup" class="lp-role-cta lp-role-cta--driver">
+            Start as Driver <mat-icon>arrow_forward</mat-icon>
+          </a>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ═════════════════════ TESTIMONIALS ═════════════════════════ -->
+  <section class="lp-testi">
+    <div class="lp-container">
+      <div class="lp-section-head">
+        <span class="lp-tag">Real Stories</span>
+        <h2>What Our Community Says</h2>
+        <p>Thousands of commuters trust We'll Share every day</p>
+      </div>
+
+      <div class="lp-testi-grid">
+
+        <div class="lp-tcard lp-tcard--featured">
+          <div class="lp-tcard-quote">"</div>
+          <div class="lp-tcard-stars">★★★★★</div>
+          <p>"We'll Share completely changed my daily commute. I save ₹3,000 every month and made genuine friends along the way. The verification system makes me feel completely safe."</p>
+          <div class="lp-tcard-author">
+            <div class="lp-tcard-av" style="background:#7c3aed">R</div>
+            <div>
+              <strong>Rahul Mehta</strong>
+              <span>Rider · Pune → Hinjewadi</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="lp-tcard">
+          <div class="lp-tcard-quote">"</div>
+          <div class="lp-tcard-stars">★★★★★</div>
+          <p>"As a driver, I've recovered almost all my fuel costs. The booking system is seamless and I love being able to pick who I travel with."</p>
+          <div class="lp-tcard-author">
+            <div class="lp-tcard-av" style="background:#2563eb">S</div>
+            <div>
+              <strong>Sneha Patil</strong>
+              <span>Driver · Bangalore</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="lp-tcard">
+          <div class="lp-tcard-quote">"</div>
+          <div class="lp-tcard-stars">★★★★★</div>
+          <p>"Sent a fragile package from Mumbai to Pune via a verified driver. Arrived in 3 hours — safer, faster, and cheaper than any courier service I've used."</p>
+          <div class="lp-tcard-author">
+            <div class="lp-tcard-av" style="background:#0d9488">A</div>
+            <div>
+              <strong>Aditya Kumar</strong>
+              <span>Parcel Sender · Mumbai</span>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════ IMPACT / MISSION ══════════════════════ -->
+  <section class="lp-impact">
+    <div class="lp-container lp-impact-grid">
+
+      <div class="lp-impact-text">
+        <span class="lp-tag lp-tag--light">Our Mission</span>
+        <h2>Moving India Smarter &amp; Greener</h2>
+        <p>Every shared ride means less traffic on our roads, lower carbon emissions, and more money in commuters' pockets. We're building a sustainable transport ecosystem for the next billion Indians.</p>
+        <a routerLink="/auth/signup" class="lp-impact-cta">
+          Join the Movement <mat-icon>arrow_forward</mat-icon>
+        </a>
+      </div>
+
+      <div class="lp-impact-numbers">
+        <div class="lp-istat">
+          <span class="lp-istat-n">40%</span>
+          <span class="lp-istat-l">Average cost saving per trip</span>
+        </div>
+        <div class="lp-istat">
+          <span class="lp-istat-n">1.2M+</span>
+          <span class="lp-istat-l">Tonnes CO₂ avoided annually</span>
+        </div>
+        <div class="lp-istat">
+          <span class="lp-istat-n">2×</span>
+          <span class="lp-istat-l">Faster than solo in peak hours</span>
+        </div>
+        <div class="lp-istat">
+          <span class="lp-istat-n">200+</span>
+          <span class="lp-istat-l">Cities and growing fast</span>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ═══════════════════════ FINAL CTA ════════════════════════════ -->
+  <section class="lp-final-cta">
+    <!-- Radial glow -->
+    <div class="lp-fcta-glow" aria-hidden="true"></div>
+    <div class="lp-container lp-fcta-inner">
+      <div class="lp-fcta-badge">
+        <mat-icon>bolt</mat-icon> Free to join · No credit card
+      </div>
+      <h2>Ready to Share the Journey?</h2>
+      <p>Join 12,000+ commuters already saving money, reducing traffic, and making their daily commute worthwhile.</p>
+      <div class="lp-fcta-btns">
+        <a routerLink="/auth/signup" class="lp-btn-primary lp-btn-primary--lg">
+          Create Free Account <mat-icon>arrow_forward</mat-icon>
+        </a>
+        <a routerLink="/auth/login" class="lp-btn-ghost">
+          Already a member? Sign In
+        </a>
+      </div>
+      <div class="lp-fcta-trust">
+        <span><mat-icon>verified_user</mat-icon> ID Verified Community</span>
+        <span><mat-icon>lock</mat-icon> 100% Secure</span>
+        <span><mat-icon>support_agent</mat-icon> 24/7 Support</span>
+        <span><mat-icon>eco</mat-icon> Carbon Positive</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════ FOOTER ═══════════════════════════ -->
+  <footer class="lp-footer">
+    <div class="lp-container lp-footer-grid">
+
+      <div class="lp-footer-brand">
+        <div class="lp-footer-logo">
+          <div class="lp-footer-logo-icon"><mat-icon>directions_car</mat-icon></div>
+          <span>We'll Share</span>
+        </div>
+        <p>India's smarter carpooling &amp; parcel-sharing platform. Save money, reduce traffic, go green.</p>
+        <div class="lp-footer-badges">
+          <span><mat-icon>verified_user</mat-icon> ID Verified</span>
+          <span><mat-icon>lock</mat-icon> Secure Platform</span>
+        </div>
+      </div>
+
+      <div class="lp-fcol">
+        <h4>Get Started</h4>
+        <a routerLink="/auth/signup">Create Account</a>
+        <a routerLink="/auth/login">Sign In</a>
+        <a routerLink="/auth/signup">Role Selection</a>
+      </div>
+
+      <div class="lp-fcol">
+        <h4>Features</h4>
+        <a routerLink="/auth/signup">Find a Ride</a>
+        <a routerLink="/auth/signup">Post a Ride</a>
+        <a routerLink="/auth/signup">Send Parcels</a>
+        <a routerLink="/auth/signup">Women-Only Rides</a>
+      </div>
+
+      <div class="lp-fcol">
+        <h4>Safety</h4>
+        <a routerLink="/auth/signup">Verification Process</a>
+        <a routerLink="/auth/signup">SOS Emergency</a>
+        <a routerLink="/auth/signup">Live Trip Tracking</a>
+      </div>
+
+    </div>
+
+    <div class="lp-footer-bar">
+      <div class="lp-container lp-footer-bar-inner">
+        <p>© {{ year }} We'll Share · Built with ❤ for smarter commutes across India</p>
+        <div class="lp-footer-bar-links">
+          <a href="#">Privacy</a>
+          <a href="#">Terms</a>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+</div>

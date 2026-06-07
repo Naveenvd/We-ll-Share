@@ -1,0 +1,114 @@
+.page-wrapper { max-width: 720px; margin: 0 auto; padding: 24px 16px 80px; }
+
+.page-header {
+  display: flex; align-items: center; gap: 8px; margin-bottom: 20px;
+  h2 { margin: 0; font-size: 22px; color: var(--rm-primary-dark); flex: 1; }
+  .new-btn { margin-left: auto; }
+}
+
+.center-spinner { display: flex; justify-content: center; padding: 60px; }
+
+.empty-state {
+  text-align: center; padding: 60px 0; color: #bbb;
+  mat-icon { font-size: 48px; width: 48px; height: 48px; display: block; margin: 0 auto 12px; }
+  a { color: var(--rm-primary); }
+}
+
+.parcel-card {
+  border-radius: var(--rm-radius-md) !important; margin-bottom: 14px;
+  cursor: pointer; transition: box-shadow .2s, transform .2s;
+  &:hover { box-shadow: var(--rm-shadow-md) !important; transform: translateY(-1px); }
+  mat-card-content { padding: 16px 20px !important; }
+}
+
+.card-top-row { display: flex; align-items: center; gap: 8px; margin-bottom: 12px; flex-wrap: wrap; }
+
+.status-badge {
+  padding: 3px 12px; border-radius: 100px; font-size: 12px; font-weight: 600;
+  &--pending            { background: #fffbeb; color: #92400e; }
+  &--accepted           { background: #eff6ff; color: #1d4ed8; }
+  &--in-transit         { background: #dcfce7; color: #166534; }
+  &--delivered          { background: #f3e8ff; color: #6b21a8; }
+  &--rejected           { background: #fee2e2; color: #991b1b; }
+  &--cancelled          { background: #f3f4f6; color: #6b7280; }
+  &--complaint-raised   { background: #fff7ed; color: #c2410c; }
+}
+
+.unread-badge {
+  background: #ef4444; color: #fff; font-size: 11px; font-weight: 700;
+  padding: 2px 8px; border-radius: 100px;
+}
+
+.size-tag {
+  background: #e8eaf6; color: var(--rm-primary-dark); font-size: 11px;
+  padding: 2px 8px; border-radius: 100px; font-weight: 600;
+}
+
+.route-row {
+  display: flex; align-items: center; gap: 6px; margin-bottom: 10px;
+  .loc { font-size: 14px; font-weight: 600; }
+  .from { color: var(--rm-primary-dark); }
+  .to   { color: #dc2626; }
+  .arrow-icon { font-size: 18px; color: var(--rm-text-muted); }
+}
+
+.meta-row {
+  display: flex; flex-wrap: wrap; gap: 14px; font-size: 13px;
+  color: var(--rm-text-muted); margin-bottom: 12px;
+  span { display: flex; align-items: center; gap: 4px; }
+  .meta-icon { font-size: 16px; width: 16px; height: 16px; color: var(--rm-primary); }
+  .price { font-weight: 700; color: var(--rm-primary); font-size: 15px; margin-left: auto; }
+}
+
+.otp-row {
+  display: flex; align-items: center; gap: 10px;
+  background: #dcfce7; border-radius: var(--rm-radius-sm); padding: 8px 14px; margin-bottom: 10px;
+  .otp-icon  { color: #16a34a; font-size: 22px; }
+  .otp-label { font-size: 11px; color: var(--rm-text-muted); }
+  .otp-code  { font-size: 26px; font-weight: 900; color: #14532d; letter-spacing: 8px; }
+  .verified-badge {
+    margin-left: auto; font-size: 12px; font-weight: 600;
+    color: #166534; background: #bbf7d0; padding: 2px 8px; border-radius: 100px;
+  }
+  &--delivery {
+    background: #eff6ff;
+    .otp-icon { color: #1d4ed8; }
+    .otp-code { color: #1e3a8a; }
+    .verified-badge { background: #bfdbfe; color: #1d4ed8; }
+  }
+}
+
+.card-actions { display: flex; gap: 10px; flex-wrap: wrap; }
+
+/* ── Dark mode overrides ─────────────────────────────────────────── */
+:host-context([data-theme="dark"]) {
+  .status-badge {
+    &--pending            { background: rgba(245,158,11,.15);  color: #fcd34d; }
+    &--accepted           { background: rgba(37,99,235,.15);   color: #93c5fd; }
+    &--in-transit         { background: rgba(22,163,74,.15);   color: #86efac; }
+    &--delivered          { background: rgba(124,58,237,.15);  color: #c4b5fd; }
+    &--rejected           { background: rgba(220,38,38,.15);   color: #fca5a5; }
+    &--cancelled          { background: rgba(107,114,128,.12); color: #d1d5db; }
+    &--complaint-raised   { background: rgba(194,65,12,.15);   color: #fdba74; }
+  }
+
+  .size-tag {
+    background: rgba(124,58,237,.15);
+    color: var(--rm-primary-light);
+  }
+
+  .route-row .from { color: var(--rm-primary-light); }
+
+  .otp-row {
+    background: rgba(22,163,74,.12);
+    border: 1px solid rgba(110,231,183,.25);
+    .otp-code { color: #a7f3d0; }
+    .verified-badge { background: rgba(22,163,74,.2); color: #6ee7b7; }
+    &--delivery {
+      background: rgba(37,99,235,.12);
+      border-color: rgba(147,197,253,.25);
+      .otp-code { color: #93c5fd; }
+      .verified-badge { background: rgba(37,99,235,.2); color: #93c5fd; }
+    }
+  }
+}

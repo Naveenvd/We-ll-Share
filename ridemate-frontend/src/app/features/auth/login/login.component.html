@@ -1,0 +1,110 @@
+<!-- Login — premium split-screen layout -->
+<div class="auth-container">
+
+  <!-- ── Left hero panel ─────────────────────────────────────────── -->
+  <div class="auth-hero">
+
+    <!-- Decorative concentric rings (pure CSS, no functionality) -->
+    <span class="hero-ring hero-ring--1"></span>
+    <span class="hero-ring hero-ring--2"></span>
+    <span class="hero-ring hero-ring--3"></span>
+
+    <div class="hero-icon">
+      <mat-icon>directions_car</mat-icon>
+    </div>
+
+    <h1>We'll Share</h1>
+    <p>The smarter way to share rides and send parcels across the city.</p>
+
+    <ul class="hero-features">
+      <li><mat-icon>check_circle</mat-icon> Find rides along your route</li>
+      <li><mat-icon>check_circle</mat-icon> Send parcels with any driver</li>
+      <li><mat-icon>check_circle</mat-icon> Safe, verified community</li>
+      <li><mat-icon>check_circle</mat-icon> Women-only ride options</li>
+    </ul>
+
+    <!-- Floating stat chips -->
+    <div class="hero-stats-row">
+      <div class="hero-stat-chip">
+        <span class="hsc-num">50K+</span>
+        <span class="hsc-lbl">Rides Shared</span>
+      </div>
+      <div class="hero-stat-chip">
+        <span class="hsc-num">200+</span>
+        <span class="hsc-lbl">Cities</span>
+      </div>
+      <div class="hero-stat-chip">
+        <span class="hsc-num">4.8 ★</span>
+        <span class="hsc-lbl">Rating</span>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ── Right form panel ────────────────────────────────────────── -->
+  <div class="auth-form-panel">
+    <div class="auth-inner">
+
+      <!-- Mobile-only brand mark -->
+      <div class="form-brand-mark">
+        <mat-icon>directions_car</mat-icon>
+        <span>We'll Share</span>
+      </div>
+
+      <div class="form-heading">
+        <h2>Welcome back 👋</h2>
+        <p>Sign in to your We'll Share account</p>
+      </div>
+
+      <!-- Error banner -->
+      <div *ngIf="errorMessage" class="error-banner">
+        <mat-icon>error_outline</mat-icon> {{ errorMessage }}
+      </div>
+
+      <form [formGroup]="form" (ngSubmit)="submit()" novalidate class="login-form">
+
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Email address</mat-label>
+          <input matInput formControlName="email" type="email"
+                 autocomplete="email" placeholder="you@example.com" />
+          <mat-icon matSuffix>mail_outline</mat-icon>
+          <mat-error *ngIf="form.get('email')?.hasError('required')">Email is required</mat-error>
+          <mat-error *ngIf="form.get('email')?.hasError('email')">Enter a valid email</mat-error>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Password</mat-label>
+          <input matInput formControlName="password"
+                 [type]="hidePassword ? 'password' : 'text'"
+                 autocomplete="current-password" />
+          <button mat-icon-button matSuffix type="button"
+                  (click)="hidePassword = !hidePassword" tabindex="-1">
+            <mat-icon>{{ hidePassword ? 'visibility_off' : 'visibility' }}</mat-icon>
+          </button>
+          <mat-error *ngIf="form.get('password')?.hasError('required')">Password is required</mat-error>
+        </mat-form-field>
+
+        <div class="forgot-link">
+          <a routerLink="/auth/forgot-password">Forgot password?</a>
+        </div>
+
+        <button mat-raised-button color="primary" type="submit"
+                class="full-width submit-btn" [disabled]="loading">
+          <mat-spinner *ngIf="loading" diameter="20" class="inline-spinner"></mat-spinner>
+          <span *ngIf="!loading">Sign In</span>
+        </button>
+
+      </form>
+
+      <div class="auth-divider"><span>New to We'll Share?</span></div>
+
+      <p class="signup-prompt">
+        <a routerLink="/auth/signup" class="signup-cta-btn">
+          Create a free account <mat-icon>arrow_forward</mat-icon>
+        </a>
+      </p>
+
+    </div>
+  </div>
+
+</div>
