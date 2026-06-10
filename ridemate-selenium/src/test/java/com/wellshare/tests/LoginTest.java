@@ -5,6 +5,8 @@ import com.wellshare.pages.DashboardPage;
 import com.wellshare.pages.LoginPage;
 import com.wellshare.utils.ConfigReader;
 import com.wellshare.utils.ExtentReportManager;
+import org.openqa.selenium.By;
+import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.testng.Assert;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
@@ -44,13 +46,22 @@ public class LoginTest extends BaseTest {
             ConfigReader.get("rider.password")
         );
 
-        Assert.assertTrue(
-            dashboardPage.isDashboardLoaded(),
-            "Dashboard should load after valid login"
-        );
+        // After login a first-time session lands on /auth/role-select (no mode chosen yet).
+        // If so, click "I'm a Rider" to proceed to /dashboard.
+        wait.until(ExpectedConditions.or(
+            ExpectedConditions.urlContains("/dashboard"),
+            ExpectedConditions.urlContains("/role-select")
+        ));
+
+        if (driver.getCurrentUrl().contains("/role-select")) {
+            ExtentReportManager.getTest().info("Landed on role-select — choosing RIDER");
+            driver.findElement(By.cssSelector(".role-card--rider")).click();
+            wait.until(ExpectedConditions.urlContains("/dashboard"));
+        }
+
         Assert.assertTrue(
             driver.getCurrentUrl().contains("/dashboard"),
-            "URL should contain /dashboard after login"
+            "URL should contain /dashboard after valid login"
         );
 
         ExtentReportManager.getTest().info("Redirected to: " + driver.getCurrentUrl());
@@ -117,9 +128,15 @@ public class LoginTest extends BaseTest {
             ConfigReader.get("admin.password")
         );
 
+        // Wait until Angular finishes routing to /admin/dashboard.
+        // Pre-condition: admin@ridemate.com must have phone_verified = 1 in the DB.
+        wait.until(ExpectedConditions.urlContains("/admin"));
+
         Assert.assertTrue(
             driver.getCurrentUrl().contains("/admin"),
             "Admin user should land on /admin/dashboard"
         );
+
+        ExtentReportManager.getTest().info("Admin redirected to: " + driver.getCurrentUrl());
     }
 }
