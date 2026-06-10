@@ -6,6 +6,7 @@ import com.wellshare.pages.LoginPage;
 import com.wellshare.pages.SearchRidePage;
 import com.wellshare.utils.ConfigReader;
 import com.wellshare.utils.ExtentReportManager;
+import org.openqa.selenium.JavascriptExecutor;
 import org.testng.Assert;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
@@ -27,7 +28,7 @@ public class BookingFlowTest extends BaseTest {
     private DashboardPage dashboardPage;
     private SearchRidePage searchRidePage;
 
-    @BeforeMethod
+    @BeforeMethod(dependsOnMethods = "setUp", alwaysRun = true)
     public void loginAsRider() {
         navigateTo(ConfigReader.get("app.login.url"));
         loginPage = new LoginPage(driver);
@@ -84,7 +85,7 @@ public class BookingFlowTest extends BaseTest {
 
         // Open a fresh browser session (no login)
         driver.manage().deleteAllCookies();
-        driver.executeScript("sessionStorage.clear(); localStorage.clear();");
+        ((JavascriptExecutor) driver).executeScript("sessionStorage.clear(); localStorage.clear();");
 
         // Try to access bookings directly
         driver.get(ConfigReader.get("app.bookings.url"));

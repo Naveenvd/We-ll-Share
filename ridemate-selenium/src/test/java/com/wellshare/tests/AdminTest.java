@@ -5,6 +5,7 @@ import com.wellshare.pages.AdminDashboardPage;
 import com.wellshare.pages.LoginPage;
 import com.wellshare.utils.ConfigReader;
 import com.wellshare.utils.ExtentReportManager;
+import org.openqa.selenium.JavascriptExecutor;
 import org.testng.Assert;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
@@ -25,7 +26,7 @@ public class AdminTest extends BaseTest {
     private LoginPage loginPage;
     private AdminDashboardPage adminPage;
 
-    @BeforeMethod
+    @BeforeMethod(dependsOnMethods = "setUp", alwaysRun = true)
     public void loginAsAdmin() {
         navigateTo(ConfigReader.get("app.login.url"));
         loginPage = new LoginPage(driver);
@@ -107,7 +108,7 @@ public class AdminTest extends BaseTest {
 
         // Logout by clearing session, then login as rider
         driver.manage().deleteAllCookies();
-        driver.executeScript("sessionStorage.clear();");
+        ((JavascriptExecutor) driver).executeScript("sessionStorage.clear();");
 
         navigateTo(ConfigReader.get("app.login.url"));
         LoginPage loginPageRider = new LoginPage(driver);

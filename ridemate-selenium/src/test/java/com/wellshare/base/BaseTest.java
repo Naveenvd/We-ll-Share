@@ -14,6 +14,7 @@ import org.openqa.selenium.support.ui.WebDriverWait;
 import org.testng.ITestResult;
 import org.testng.annotations.*;
 
+import java.lang.reflect.Method;
 import java.time.Duration;
 
 /**
@@ -40,8 +41,10 @@ public class BaseTest {
     }
 
     // ── Before Each Test: open browser ─────────────────────────────
-    @BeforeMethod
-    public void setUp(ITestResult result) {
+    @BeforeMethod(alwaysRun = true)
+    public void setUp() {
+        String testName = "Test-" + Thread.currentThread().getId() + "-" + System.currentTimeMillis();
+
         String browser  = ConfigReader.get("browser").toLowerCase();
         boolean headless = ConfigReader.getBoolean("headless");
 
@@ -79,9 +82,9 @@ public class BaseTest {
         // Maximize window
         driver.manage().window().maximize();
 
-        // Create ExtentReport test entry
+        // Create ExtentReport test node
         ExtentTest extentTest = ExtentReportManager.getInstance()
-            .createTest(result.getMethod().getMethodName());
+            .createTest(testName);
         ExtentReportManager.setTest(extentTest);
     }
 
