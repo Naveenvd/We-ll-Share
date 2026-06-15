@@ -81,14 +81,16 @@ services:
     runtime: static
     branch: main
     autoDeploy: true
-    # Build from repo root: cd into the frontend, bake in the real backend
-    # URL (from the backend service's host), then produce the prod bundle.
+    # rootDir makes build + publish paths relative to ridemate-frontend.
+    rootDir: ridemate-frontend
+    # Bake in the real backend URL (from the backend service's host), then
+    # produce the prod bundle. Runs inside rootDir, so no cd needed.
     buildCommand: |
-      cd ridemate-frontend &&
       npm ci &&
       printf 'export const environment = { production: true, apiUrl: "https://%s/api", wsUrl: "https://%s/ws" };\n' "$API_HOST" "$API_HOST" > src/environments/environment.prod.ts &&
       npm run build -- --configuration=production
-    staticPublishPath: ridemate-frontend/dist/ridemate-frontend/browser
+    # Relative to rootDir (ridemate-frontend) — where Angular emits the SPA.
+    staticPublishPath: dist/ridemate-frontend/browser
     envVars:
       - key: NODE_VERSION
         value: "20.11.1"
