@@ -81,7 +81,10 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration config = new CorsConfiguration();
-        config.setAllowedOrigins(List.of(allowedOrigin));
+        // Comma-separated list of allowed origins/patterns (e.g.
+        // "http://localhost:4200,https://*.onrender.com"). Patterns are used
+        // (not setAllowedOrigins) so wildcards work alongside allowCredentials=true.
+        config.setAllowedOriginPatterns(List.of(allowedOrigin.split(",")));
         config.setAllowedMethods(List.of("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
         config.setAllowedHeaders(List.of("*"));
         config.setAllowCredentials(true);

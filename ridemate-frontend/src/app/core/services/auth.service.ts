@@ -5,7 +5,7 @@ import {
   SignupRequest, LoginRequest, AuthResponse,
   ApiResponse, SessionUser, UserMode
 } from '../models/auth.model';
-import { environment } from '../../../../environments/environment';
+import { environment } from '../../../environments/environment';
 
 const API = environment.apiUrl;
 const SESSION_KEY = 'ridemate_session';

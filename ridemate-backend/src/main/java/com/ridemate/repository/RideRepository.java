@@ -39,7 +39,7 @@ public interface RideRepository extends JpaRepository<Ride, Long> {
         WHERE r.status = 'SCHEDULED'
           AND r.accepts_passengers = true
           AND r.seats_available >= :seats
-          AND DATE(r.departure_time) = DATE(:date)
+          AND CAST(r.departure_time AS date) = CAST(:date AS date)
           AND (
             6371 * ACOS(
               GREATEST(-1, LEAST(1,
@@ -68,7 +68,7 @@ public interface RideRepository extends JpaRepository<Ride, Long> {
         WHERE r.status = 'SCHEDULED'
           AND r.accepts_passengers = true
           AND r.seats_available >= :seats
-          AND DATE(r.departure_time) = DATE(:date)
+          AND CAST(r.departure_time AS date) = CAST(:date AS date)
           AND (6371 * ACOS(GREATEST(-1, LEAST(1,
                 COS(RADIANS(:fromLat)) * COS(RADIANS(r.from_lat))
                 * COS(RADIANS(r.from_lng) - RADIANS(:fromLng))
@@ -103,7 +103,7 @@ public interface RideRepository extends JpaRepository<Ride, Long> {
         SELECT r.* FROM rides r
         WHERE r.status = 'SCHEDULED'
           AND r.accepts_parcels = true
-          AND DATE(r.departure_time) >= DATE(:fromDate)
+          AND CAST(r.departure_time AS date) >= CAST(:fromDate AS date)
           AND (
             6371 * ACOS(GREATEST(-1, LEAST(1,
               COS(RADIANS(:fromLat)) * COS(RADIANS(r.from_lat))
@@ -122,7 +122,7 @@ public interface RideRepository extends JpaRepository<Ride, Long> {
         SELECT COUNT(*) FROM rides r
         WHERE r.status = 'SCHEDULED'
           AND r.accepts_parcels = true
-          AND DATE(r.departure_time) >= DATE(:fromDate)
+          AND CAST(r.departure_time AS date) >= CAST(:fromDate AS date)
           AND (6371 * ACOS(GREATEST(-1, LEAST(1,
                 COS(RADIANS(:fromLat)) * COS(RADIANS(r.from_lat))
                 * COS(RADIANS(r.from_lng) - RADIANS(:fromLng))

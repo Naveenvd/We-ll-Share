@@ -1,0 +1,106 @@
+# ═══════════════════════════════════════════════════════════════════
+#  We'll Share — Render.com Blueprint
+#
+#  One-click deploy of the whole stack:
+#    • wellshare-db        — free managed PostgreSQL
+#    • wellshare-backend    — Spring Boot (Docker), prod profile
+#    • wellshare-frontend   — Angular static site
+#
+#  HOW TO DEPLOY:
+#    1. Push this repo to GitHub (done).
+#    2. On https://dashboard.render.com  →  New  →  Blueprint.
+#    3. Connect this repo. Render reads this file and shows 3 resources.
+#    4. It will prompt for the two values marked "sync: false" below
+#       (Gmail address + Gmail App Password for OTP email). You can leave
+#       them blank — the app still boots; only email OTP is disabled.
+#    5. Click "Apply". First build ~5–8 min. Then open the frontend URL.
+#
+#  Everything else (DB credentials, JWT secret, the backend URL baked
+#  into the frontend) is wired automatically — no manual editing.
+# ═══════════════════════════════════════════════════════════════════
+
+databases:
+  - name: wellshare-db
+    databaseName: ridemate
+    user: ridemate
+    plan: free
+    region: oregon
+
+services:
+  # ── Backend — Spring Boot via Docker ──────────────────────────────
+  - type: web
+    name: wellshare-backend
+    runtime: docker
+    plan: free
+    region: oregon
+    branch: main
+    dockerfilePath: ./ridemate-backend/Dockerfile
+    dockerContext: ./ridemate-backend
+    autoDeploy: true
+    envVars:
+      # Activate the prod profile (else the app uses local-dev application.properties)
+      - key: SPRING_PROFILES_ACTIVE
+        value: prod
+      # Database connection — injected from wellshare-db (no manual entry)
+      - key: DB_HOST
+        fromDatabase:
+          name: wellshare-db
+          property: host
+      - key: DB_PORT
+        fromDatabase:
+          name: wellshare-db
+          property: port
+      - key: DB_NAME
+        fromDatabase:
+          name: wellshare-db
+          property: database
+      - key: DB_USER
+        fromDatabase:
+          name: wellshare-db
+          property: user
+      - key: DB_PASSWORD
+        fromDatabase:
+          name: wellshare-db
+          property: password
+      # JWT signing secret — Render generates a strong 256-bit value
+      - key: JWT_SECRET
+        generateValue: true
+      # CORS — allow any *.onrender.com frontend (and local dev).
+      # SecurityConfig + WebSocketConfig split this on commas.
+      - key: FRONTEND_URL
+        value: https://*.onrender.com,http://localhost:4200
+      # Email (OTP) — optional. Render prompts for these; leave blank to skip.
+      - key: MAIL_USERNAME
+        sync: false
+      - key: MAIL_PASSWORD
+        sync: false
+
+  # ── Frontend — Angular static site ────────────────────────────────
+  - type: web
+    name: wellshare-frontend
+    runtime: static
+    branch: main
+    autoDeploy: true
+    # Build from repo root: cd into the frontend, bake in the real backend
+    # URL (from the backend service's host), then produce the prod bundle.
+    buildCommand: |
+      cd ridemate-frontend &&
+      npm ci &&
+      printf 'export const environment = { production: true, apiUrl: "https://%s/api", wsUrl: "https://%s/ws" };\n' "$API_HOST" "$API_HOST" > src/environments/environment.prod.ts &&
+      npm run build -- --configuration=production
+    staticPublishPath: ridemate-frontend/dist/ridemate-frontend/browser
+    envVars:
+      - key: NODE_VERSION
+        value: "20.11.1"
+      # The backend's public hostname (e.g. wellshare-backend.onrender.com),
+      # used by the build above to point the SPA at the live API.
+      - key: API_HOST
+        fromService:
+          type: web
+          name: wellshare-backend
+          property: host
+    # SPA fallback — every path serves index.html so Angular routing works.
+    routes:
+      - type: rewrite
+        source: /*
+        destination: /index.html

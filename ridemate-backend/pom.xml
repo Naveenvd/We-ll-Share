@@ -52,6 +52,16 @@
             <artifactId>mysql-connector-j</artifactId>
             <scope>runtime</scope>
         </dependency>
+        <!-- PostgreSQL — used by the prod profile on Render (managed Postgres).
+             MySQL stays for local dev; the active profile's JDBC URL picks the driver.
+             Version is managed by spring-boot-starter-parent (42.6.x). NOTE: this
+             may not download behind a corporate SSL proxy locally, but resolves
+             fine on Render's build infrastructure. -->
+        <dependency>
+            <groupId>org.postgresql</groupId>
+            <artifactId>postgresql</artifactId>
+            <scope>runtime</scope>
+        </dependency>
 
         <!-- Validation -->
         <dependency>

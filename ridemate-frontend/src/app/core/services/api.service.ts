@@ -16,7 +16,7 @@ import {
   BlockedUserResponse, HistoryItem
 } from '../models/safety.model';
 import { ReviewRequest, ReviewResponse } from '../models/review.model';
-import { environment } from '../../../../environments/environment';
+import { environment } from '../../../environments/environment';
 
 const API = environment.apiUrl;
 
