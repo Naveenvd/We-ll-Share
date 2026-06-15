@@ -28,7 +28,7 @@ yarn.lock
 *.local
 
 # Angular environment files (use environment.example.ts as template)
-src/environments/environment.prod.ts
+# environment.prod.ts is committed with placeholder Render URLs — no secrets
 src/environments/environment.development.ts
 
 # ── IDE & Editor Files ────────────────────────────────

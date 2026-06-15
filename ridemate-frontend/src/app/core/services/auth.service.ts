@@ -5,8 +5,9 @@ import {
   SignupRequest, LoginRequest, AuthResponse,
   ApiResponse, SessionUser, UserMode
 } from '../models/auth.model';
+import { environment } from '../../../../environments/environment';
 
-const API = 'http://localhost:8081/api';
+const API = environment.apiUrl;
 const SESSION_KEY = 'ridemate_session';
 
 @Injectable({ providedIn: 'root' })

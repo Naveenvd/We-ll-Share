@@ -16,8 +16,9 @@ import {
   BlockedUserResponse, HistoryItem
 } from '../models/safety.model';
 import { ReviewRequest, ReviewResponse } from '../models/review.model';
+import { environment } from '../../../../environments/environment';
 
-const API = 'http://localhost:8081/api';
+const API = environment.apiUrl;
 
 @Injectable({ providedIn: 'root' })
 export class ApiService {

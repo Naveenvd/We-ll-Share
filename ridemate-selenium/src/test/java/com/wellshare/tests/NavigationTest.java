@@ -4,8 +4,8 @@ import com.wellshare.base.BaseTest;
 import com.wellshare.pages.LoginPage;
 import com.wellshare.utils.ConfigReader;
 import com.wellshare.utils.ExtentReportManager;
+import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.testng.Assert;
-import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
 /**
@@ -72,6 +72,9 @@ public class NavigationTest extends BaseTest {
         LoginPage loginPage = new LoginPage(driver);
         loginPage.clickSignupLink();
 
+        // Angular routing is async — wait for URL to include /signup
+        wait.until(ExpectedConditions.urlContains("/signup"));
+
         Assert.assertTrue(
             driver.getCurrentUrl().contains("/signup"),
             "Signup link should navigate to /signup"
@@ -109,6 +112,18 @@ public class NavigationTest extends BaseTest {
 
         for (String url : protectedUrls) {
             driver.get(url);
+
+            // Angular route guard runs asynchronously after the page loads.
+            // Wait for it to complete the redirect before reading the URL.
+            try {
+                wait.until(ExpectedConditions.or(
+                    ExpectedConditions.urlContains("/login"),
+                    ExpectedConditions.urlContains("/auth")
+                ));
+            } catch (Exception ignored) {
+                // If still not redirected after wait, let the assertion fail below
+            }
+
             boolean redirectedToAuth =
                 driver.getCurrentUrl().contains("/login") ||
                 driver.getCurrentUrl().contains("/auth");

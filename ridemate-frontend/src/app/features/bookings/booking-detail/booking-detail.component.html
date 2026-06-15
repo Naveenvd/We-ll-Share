@@ -133,46 +133,9 @@
   </ng-container>
 
   <!-- ── Chat panel ── -->
-  <mat-card class="chat-card" *ngIf="!loading && booking">
-    <mat-card-content class="chat-content">
-
-      <div class="section-title chat-title">
-        <mat-icon>chat</mat-icon> Chat
-      </div>
-
-      <!-- Messages list -->
-      <div class="messages-list" #chatList>
-        <div *ngIf="messages.length === 0" class="no-messages">
-          No messages yet. Say hi!
-        </div>
-        <div *ngFor="let m of messages"
-             class="message-bubble"
-             [class.mine]="isMine(m)"
-             [class.theirs]="!isMine(m)">
-          <div class="bubble-sender">{{ isMine(m) ? 'You' : m.senderName }}</div>
-          <div class="bubble-text">{{ m.text }}</div>
-          <div class="bubble-time">{{ m.sentAt | date:'h:mm a' }}</div>
-        </div>
-        <div #messagesEnd></div>
-      </div>
-
-      <!-- Input row -->
-      <div class="chat-input-row">
-        <mat-form-field appearance="outline" class="chat-field">
-          <input matInput
-                 placeholder="Type a message…"
-                 [(ngModel)]="newText"
-                 (keydown)="onKeydown($event)"
-                 maxlength="500" />
-        </mat-form-field>
-        <button mat-icon-button color="primary"
-                [disabled]="!newText.trim() || sending"
-                (click)="send()">
-          <mat-icon>send</mat-icon>
-        </button>
-      </div>
-
-    </mat-card-content>
-  </mat-card>
+  <app-chat-box *ngIf="!loading && booking"
+    [bookingId]="bookingId"
+    [currentUserId]="myId">
+  </app-chat-box>
 
 </div>

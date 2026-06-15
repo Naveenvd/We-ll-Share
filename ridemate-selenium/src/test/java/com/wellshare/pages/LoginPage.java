@@ -1,5 +1,6 @@
 package com.wellshare.pages;
 
+import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
@@ -33,7 +34,7 @@ public class LoginPage {
     @FindBy(css = "button[type='submit']")
     private WebElement loginButton;
 
-    @FindBy(css = ".error-message, mat-error, .alert-error")
+    @FindBy(xpath="//div[contains(text(),'Invalid credentials')]")
     private WebElement errorMessage;
 
     @FindBy(css = "a[routerlink='/auth/signup'], a[href*='signup']")
@@ -85,7 +86,11 @@ public class LoginPage {
 
     /** Check if error message is displayed */
     public boolean isErrorDisplayed() {
+//        System.out.println("jiojij");
+//        errorMessage = driver.findElement(By.xpath());
         try {
+            Thread.sleep(2000);
+            System.out.println(errorMessage.getText());
             return errorMessage.isDisplayed();
         } catch (Exception e) {
             return false;

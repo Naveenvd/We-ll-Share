@@ -3,6 +3,7 @@ import { Client, IMessage, StompSubscription } from '@stomp/stompjs';
 import SockJS from 'sockjs-client';
 import { Observable, Subject } from 'rxjs';
 import { AuthService } from './auth.service';
+import { environment } from '../../../../environments/environment';
 
 /**
  * Thin wrapper around @stomp/stompjs that:
@@ -31,7 +32,7 @@ export class WebSocketService implements OnDestroy {
   private initClient(): void {
     this.client = new Client({
       // SockJS factory — called each (re)connect
-      webSocketFactory: () => new SockJS('http://localhost:8081/ws'),
+      webSocketFactory: () => new SockJS(environment.wsUrl),
 
       // B5 fix: start with empty headers; beforeConnect fills them fresh
       // so that a post-login WebSocket connection gets the correct JWT.

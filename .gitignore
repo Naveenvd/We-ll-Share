@@ -16,8 +16,8 @@ ridemate-backend/target/
 # ⚠️  SECRETS — application.properties has DB password,
 #     JWT secret, email credentials. DO NOT commit.
 ridemate-backend/src/main/resources/application.properties
-ridemate-backend/src/main/resources/application-prod.properties
 ridemate-backend/src/main/resources/application-dev.properties
+# application-prod.properties is committed — uses ${ENV_VAR} placeholders only, no real secrets
 
 # User uploaded files (runtime data, not source code)
 ridemate-backend/uploads/
@@ -48,8 +48,8 @@ ridemate-frontend/bazel-out/
 # Angular CLI cache
 ridemate-frontend/.angular/
 
-# Angular prod environment (has production API URL)
-ridemate-frontend/src/environments/environment.prod.ts
+# Angular prod environment — committed with placeholder Render URL (no secrets)
+# environment.development.ts stays ignored
 ridemate-frontend/src/environments/environment.development.ts
 
 # Testing & coverage

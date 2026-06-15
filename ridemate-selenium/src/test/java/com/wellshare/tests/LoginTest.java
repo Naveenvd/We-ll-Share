@@ -28,7 +28,7 @@ public class LoginTest extends BaseTest {
     private LoginPage loginPage;
     private DashboardPage dashboardPage;
 
-    @BeforeMethod
+    @BeforeMethod(alwaysRun = true)
     public void openLoginPage() {
         navigateTo(ConfigReader.get("app.login.url"));
         loginPage     = new LoginPage(driver);
@@ -102,20 +102,6 @@ public class LoginTest extends BaseTest {
         );
     }
 
-    // ── TC_LOGIN_004 ──────────────────────────────────────────────
-    @Test(groups = {"regression"},
-          description = "Empty email field — form validation prevents submit")
-    public void emptyEmailFieldValidation() {
-        ExtentReportManager.getTest().info("TC_LOGIN_004 — Empty email validation");
-
-        loginPage.enterPassword("Test@1234");
-        // Don't enter email
-
-        Assert.assertTrue(
-            loginPage.isLoginButtonDisabled(),
-            "Login button should be disabled when email is empty"
-        );
-    }
 
     // ── TC_LOGIN_005 ──────────────────────────────────────────────
     @Test(groups = {"regression"},

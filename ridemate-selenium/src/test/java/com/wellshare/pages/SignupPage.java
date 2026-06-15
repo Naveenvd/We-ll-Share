@@ -1,14 +1,15 @@
 package com.wellshare.pages;
 
+import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
 import org.openqa.selenium.support.PageFactory;
 import org.openqa.selenium.support.ui.ExpectedConditions;
-import org.openqa.selenium.support.ui.Select;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
 import java.time.Duration;
+import java.util.List;
 
 /**
  * Page Object: Signup Page
@@ -105,6 +106,30 @@ public class SignupPage {
 
     public String getCurrentUrl() {
         return driver.getCurrentUrl();
+    }
+
+    /**
+     * Select a gender option from the Angular Material mat-select.
+     * Opens the dropdown then clicks the matching mat-option.
+     */
+    public void selectGender(String gender) {
+        wait.until(ExpectedConditions.elementToBeClickable(genderDropdown));
+        genderDropdown.click();
+        // Options render in a global overlay outside the component
+        List<WebElement> options = wait.until(ExpectedConditions.presenceOfAllElementsLocatedBy(
+            By.cssSelector("mat-option")
+        ));
+        for (WebElement opt : options) {
+            if (opt.getText().equalsIgnoreCase(gender)) {
+                opt.click();
+                return;
+            }
+        }
+    }
+
+    public boolean isRegisterButtonDisabled() {
+        return !registerButton.isEnabled() ||
+               registerButton.getAttribute("disabled") != null;
     }
 
     public boolean isErrorDisplayed() {
