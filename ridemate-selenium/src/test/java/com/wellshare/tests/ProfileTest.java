@@ -6,6 +6,7 @@ import com.wellshare.pages.ProfilePage;
 import com.wellshare.utils.ConfigReader;
 import com.wellshare.utils.ExtentReportManager;
 import org.openqa.selenium.By;
+import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.testng.Assert;
 import org.testng.annotations.BeforeMethod;
@@ -88,7 +89,7 @@ public class ProfileTest extends BaseTest {
         // Open fresh browser context — navigate directly (no login in this test)
         // BaseTest setUp() creates a fresh Chrome session, but @BeforeMethod logged us in.
         // We navigate directly to profile. To simulate no-auth, clear sessionStorage first.
-        driver.executeScript("sessionStorage.clear();");
+        ((JavascriptExecutor) driver).executeScript("sessionStorage.clear();");
         driver.get(ConfigReader.get("app.profile.url"));
 
         wait.until(ExpectedConditions.or(

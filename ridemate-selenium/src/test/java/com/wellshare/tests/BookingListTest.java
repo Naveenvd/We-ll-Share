@@ -6,6 +6,7 @@ import com.wellshare.pages.LoginPage;
 import com.wellshare.utils.ConfigReader;
 import com.wellshare.utils.ExtentReportManager;
 import org.openqa.selenium.By;
+import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.testng.Assert;
 import org.testng.annotations.BeforeMethod;
@@ -85,7 +86,7 @@ public class BookingListTest extends BaseTest {
     public void bookingsRequiresLogin() {
         ExtentReportManager.getTest().info("TC_BOOKING_003 — Auth guard on bookings");
 
-        driver.executeScript("sessionStorage.clear();");
+        ((JavascriptExecutor) driver).executeScript("sessionStorage.clear();");
         driver.get(ConfigReader.get("app.bookings.my.url"));
 
         wait.until(ExpectedConditions.or(
